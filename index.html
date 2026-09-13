@@ -268,7 +268,19 @@
 </div>
 
 <script>
-const FIREBASE_URL = "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app/posizione.json";
+const FIREBASE_BASE_URL =
+  "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app/utenti";
+
+function getUserId() {
+  let id = localStorage.getItem("iGrandineUserId");
+
+  if (!id) {
+    id = "utente_" + crypto.randomUUID();
+    localStorage.setItem("iGrandineUserId", id);
+  }
+
+  return id;
+}
 
 function salva(lat, lon, nomeVisualizzato) {
   document.getElementById("stato").innerText = "Salvataggio in corso...";
