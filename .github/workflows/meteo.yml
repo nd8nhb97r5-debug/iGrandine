@@ -1,1 +1,40 @@
-p
+name: Controllo meteo
+
+on:
+  schedule:
+    # Ogni 10 minuti
+    - cron: "*/10 * * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  controllo-meteo:
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 3
+
+    steps:
+
+      - name: Scarica repository
+        uses: actions/checkout@v4
+
+      - name: Installa Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Installa dipendenze
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Controlla meteo
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+
+        run: |
+          python allerta_meteo.py
