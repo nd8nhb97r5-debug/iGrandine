@@ -1,1792 +1,234 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>iGrandine</title>
 
-<style>
-  * {
-    box-sizing: border-box;
-  }
 
-  html, body {
-    margin: 0;
-    min-height: 100%;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    color: white;
-    overflow-x: hidden;
-  }
 
-  body {
-    min-height: 100vh;
-    position: relative;
-    background: linear-gradient(
-      180deg,
-      #1e1b4b 0%,
-      #7c2d92 30%,
-      #ea580c 65%,
-      #fb923c 100%
-    );
 
-    background-size: 200% 200%;
-    animation: cieloMuove 25s ease infinite;
-    padding-bottom: 190px;
-  }
 
-  @keyframes cieloMuove {
-    0% {
-      background-position: 50% 0%;
-    }
 
-    50% {
-      background-position: 50% 100%;
-    }
 
-    100% {
-      background-position: 50% 0%;
-    }
-  }
 
-  /* =========================================================
-     SKYLINE
-     ========================================================= */
 
-  .skyline {
-    position: fixed;
-    bottom: 46px;
-    left: 0;
-    right: 0;
-    height: 160px;
 
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
 
-    z-index: 1;
-    pointer-events: none;
-  }
 
-  .edificio {
-    background: #1c1024;
-    margin-right: 4px;
-    position: relative;
-  }
 
-  .finestra {
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: #fde68a;
-    opacity: 0.6;
-  }
 
-  .corpo-cupola {
-    width: 54px;
-    height: 55px;
-    background: #1c1024;
-  }
 
-  .cupola {
-    width: 66px;
-    height: 34px;
-    background: #1c1024;
-    border-radius: 50% 50% 0 0;
-    margin: 0 auto;
-  }
+BRESCIA
+45.5240, 10.2176
+
+
+🌩️ iGrandine
+Scegli la zona da monitorare
+    Scegli un comune...
+    Acquafredda
+    Adro
+    Agnosine
+    Alfianello
+    Anfo
+    Angolo Terme
+    Artogne
+    Azzano Mella
+    Bagnolo Mella
+    Bagolino
+    Barbariga
+    Barghe
+    Bassano Bresciano
+    Bedizzole
+    Berlingo
+    Berzo Demo
+    Berzo Inferiore
+    Bienno
+    Bione
+    Borgo San Giacomo
+    Borgosatollo
+    Borno
+    Botticino
+    Bovegno
+    Bovezzo
+    Brandico
+    Braone
+    Breno
+    Brescia (centro)
+    Brescia - Via Aldo Moro
+    Brione
+    Caino
+    Calcinato
+    Calvagese della Riviera
+    Calvisano
+    Capo di Ponte
+    Capovalle
+    Capriano del Colle
+    Capriolo
+    Carpenedolo
+    Castegnato
+    Castel Mella
+    Castelcovati
+    Castenedolo
+    Casto
+    Castrezzato
+    Cazzago San Martino
+    Cedegolo
+    Cellatica
+    Cerveno
+    Ceto
+    Cevo
+    Chiari
+    Cigole
+    Cimbergo
+    Cividate Camuno
+    Coccaglio
+    Collebeato
+    Collio
+    Cologne
+    Comezzano-Cizzago
+    Concesio
+    Corte Franca
+    Corteno Golgi
+    Corzano
+    Darfo Boario Terme
+    Dello
+    Desenzano del Garda
+    Edolo
+    Erbusco
+    Esine
+    Fiesse
+    Flero
+    Gambara
+    Gardone Riviera
+    Gardone Val Trompia
+    Gargnano
+    Gavardo
+    Ghedi
+    Gianico
+    Gottolengo
+    Gussago
+    Idro
+    Incudine
+    Irma
+    Iseo
+    Isorella
+    Lavenone
+    Leno
+    Limone sul Garda
+    Lodrino
+    Lograto
+    Lonato del Garda
+    Longhena
+    Losine
+    Lozio
+    Lumezzane
+    Maclodio
+    Magasa
+    Mairano
+    Malegno
+    Malonno
+    Manerba del Garda
+    Manerbio
+    Marcheno
+    Marmentino
+    Marone
+    Mazzano
+    Milzano
+    Moniga del Garda
+    Monno
+    Monte Isola
+    Monticelli Brusati
+    Montichiari
+    Montirone
+    Mura
+    Muscoline
+    Nave
+    Niardo
+    Nuvolento
+    Nuvolera
+    Odolo
+    Offlaga
+    Ome
+    Ono San Pietro
+    Orzinuovi
+    Orzivecchi
+    Ospitaletto
+    Ossimo
+    Padenghe sul Garda
+    Paderno Franciacorta
+    Paisco Loveno
+    Paitone
+    Palazzolo sull'Oglio
+    Paratico
+    Paspardo
+    Passirano
+    Pavone del Mella
+    Pertica Alta
+    Pertica Bassa
+    Pezzaze
+    Pian Camuno
+    Piancogno
+    Pisogne
+    Polaveno
+    Polpenazze del Garda
+    Pompiano
+    Poncarale
+    Ponte di Legno
+    Pontevico
+    Pontoglio
+    Pozzolengo
+    Pralboino
+    Preseglie
+    Prevalle
+    Provaglio Val Sabbia
+    Provaglio d'Iseo
+    Puegnago sul Garda
+    Quinzano d'Oglio
+    Remedello
+    Rezzato
+    Roccafranca
+    Rodengo Saiano
+    Roncadelle
+    Rovato
+    Roè Volciano
+    Rudiano
+    Sabbio Chiese
+    Sale Marasino
+    Salò
+    San Felice del Benaco
+    San Gervasio Bresciano
+    San Paolo
+    San Zeno Naviglio
+    Sarezzo
+    Saviore dell'Adamello
+    Sellero
+    Seniga
+    Serle
+    Sirmione
+    Soiano del Lago
+    Sonico
+    Sulzano
+    Tavernole sul Mella
+    Temù
+    Tignale
+    Torbole Casaglia
+    Toscolano-Maderno
+    Travagliato
+    Tremosine sul Garda
+    Trenzano
+    Treviso Bresciano
+    Urago d'Oglio
+    Vallio Terme
+    Valvestino
+    Verolanuova
+    Verolavecchia
+    Vestone
+    Vezza d'Oglio
+    Villa Carcina
+    Villachiara
+    Villanuova sul Clisi
+    Vione
+    Visano
+    Vobarno
+    Zone
+   oppure
+
+Sono qui
+
+Abilita geolocalizzazione
 
-  .lanterna {
-    width: 10px;
-    height: 16px;
-    background: #1c1024;
-    margin: 0 auto;
-  }
-
-  .pallina-cupola {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: #1c1024;
-    margin: 0 auto;
-  }
-
-  .torre {
-    width: 16px;
-    height: 95px;
-    background: #1c1024;
-    margin-right: 4px;
-  }
-
-  .tetto-torre {
-    width: 0;
-    height: 0;
-
-    border-left: 11px solid transparent;
-    border-right: 11px solid transparent;
-    border-bottom: 16px solid #1c1024;
-
-    margin: 0 auto;
-  }
-
-  .scritta-brescia {
-    position: fixed;
-    bottom: 12px;
-    left: 0;
-    right: 0;
-
-    text-align: center;
-
-    z-index: 1;
-
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: 6px;
-
-    color: #1c1024;
-
-    text-shadow:
-      0 1px 6px rgba(255,255,255,0.25);
-
-    pointer-events: none;
-  }
-
-  /* =========================================================
-     PIOGGIA / GRANDINE
-     ========================================================= */
-
-  #strato-pioggia,
-  #strato-grandine {
-    position: fixed;
-    inset: 0;
-
-    z-index: 2;
-
-    pointer-events: none;
-    overflow: hidden;
-
-    transition: opacity 1.8s ease;
-  }
-
-  #strato-grandine {
-    opacity: 0;
-  }
-
-  body.fase-grandine #strato-pioggia {
-    opacity: 0;
-  }
-
-  body.fase-grandine #strato-grandine {
-    opacity: 1;
-  }
-
-  .goccia {
-    position: absolute;
-    top: -30px;
-
-    width: 2px;
-
-    background:
-      linear-gradient(
-        to bottom,
-        rgba(224,242,254,0),
-        rgba(224,242,254,0.85)
-      );
-
-    animation-name: cadeGiuVeloce;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-
-  @keyframes cadeGiuVeloce {
-    0% {
-      transform: translateY(0);
-    }
-
-    100% {
-      transform: translateY(105vh);
-    }
-  }
-
-  .grandine {
-    position: absolute;
-    top: -20px;
-
-    background: #e0f2fe;
-
-    border-radius: 50%;
-
-    box-shadow:
-      0 0 4px rgba(255,255,255,0.6);
-
-    animation-name: cadeGiu;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-  }
-
-  @keyframes cadeGiu {
-    0% {
-      transform:
-        translateY(0)
-        rotate(0deg);
-
-      opacity: 0.9;
-    }
-
-    100% {
-      transform:
-        translateY(105vh)
-        rotate(200deg);
-
-      opacity: 0.9;
-    }
-  }
-
-  /* =========================================================
-     CONTENUTO
-     ========================================================= */
-
-  .contenuto {
-    position: relative;
-
-    z-index: 3;
-
-    text-align: center;
-
-    padding:
-      40px
-      20px
-      10px
-      20px;
-  }
-
-  h1 {
-    font-size: 26px;
-    margin:
-      0
-      0
-      4px
-      0;
-  }
-
-  p.sub {
-    opacity: 0.85;
-
-    margin:
-      0
-      0
-      22px
-      0;
-
-    font-size: 14px;
-  }
-
-  /* =========================================================
-     SELECT COMUNE
-     ========================================================= */
-
-  select {
-    width: 100%;
-    max-width: 320px;
-
-    font-size: 16px;
-
-    padding:
-      16px
-      18px;
-
-    border-radius: 14px;
-
-    border: none;
-
-    background: #1e293b;
-
-    color: white;
-
-    font-weight: bold;
-
-    box-shadow:
-      0 0 18px
-      rgba(56,189,248,0.25);
-
-    -webkit-appearance: none;
-    appearance: none;
-  }
-
-  /* =========================================================
-     DIVISORE
-     ========================================================= */
-
-  .divisore {
-    margin:
-      30px
-      auto;
-
-    max-width: 320px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    opacity: 0.6;
-
-    font-size: 13px;
-  }
-
-  .divisore::before,
-  .divisore::after {
-    content: "";
-
-    flex: 1;
-
-    height: 1px;
-
-    background:
-      rgba(255,255,255,0.3);
-  }
-
-  /* =========================================================
-     GPS
-     ========================================================= */
-
-  .pin-btn {
-    background: none;
-    border: none;
-
-    padding: 0;
-
-    cursor: pointer;
-  }
-
-  .pin-btn.disabilitato {
-    opacity: 0.35;
-    pointer-events: none;
-  }
-
-  .pin {
-    width: 68px;
-    height: 68px;
-
-    background: #ef4444;
-
-    border-radius:
-      50%
-      50%
-      50%
-      0;
-
-    transform:
-      rotate(-45deg);
-
-    box-shadow:
-      0 0 24px
-      rgba(239,68,68,0.55);
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    margin: 0 auto;
-  }
-
-  .pin-btn:active .pin {
-    transform:
-      rotate(-45deg)
-      scale(0.94);
-  }
-
-  .pin-hole {
-    width: 26px;
-    height: 26px;
-
-    background: white;
-
-    border-radius: 50%;
-
-    transform:
-      rotate(45deg);
-  }
-
-  .pin-label {
-    margin-top: 12px;
-
-    font-weight: bold;
-
-    font-size: 15px;
-  }
-
-  /* =========================================================
-     STATO
-     ========================================================= */
-
-  #stato {
-    margin-top: 26px;
-
-    font-size: 14px;
-
-    min-height: 22px;
-
-    opacity: 0.95;
-
-    line-height: 1.5;
-  }
-
-  /* =========================================================
-     INFO UTENTE
-     ========================================================= */
-
-  .utente-box {
-    width: 100%;
-    max-width: 320px;
-
-    margin:
-      26px
-      auto
-      0;
-
-    padding: 15px;
-
-    border-radius: 14px;
-
-    background:
-      rgba(15,23,42,0.55);
-
-    border:
-      1px solid
-      rgba(255,255,255,0.12);
-
-    font-size: 12px;
-
-    text-align: left;
-
-    display: none;
-  }
-
-  .utente-box.visibile {
-    display: block;
-  }
-
-  .utente-titolo {
-    font-weight: bold;
-
-    margin-bottom: 8px;
-
-    font-size: 13px;
-  }
-
-  .utente-riga {
-    margin-top: 5px;
-
-    opacity: 0.85;
-
-    word-break: break-word;
-  }
-
-  /* =========================================================
-     TOGGLE GEO
-     ========================================================= */
-
-  .toggle-riga {
-    margin-top: 34px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    gap: 10px;
-
-    font-size: 12px;
-
-    opacity: 0.8;
-  }
-
-  .switch {
-    position: relative;
-
-    display: inline-block;
-
-    width: 38px;
-    height: 22px;
-  }
-
-  .switch input {
-    opacity: 0;
-
-    width: 0;
-    height: 0;
-  }
-
-  .slider {
-    position: absolute;
-
-    cursor: pointer;
-
-    inset: 0;
-
-    background-color: #4b5563;
-
-    border-radius: 22px;
-
-    transition: 0.2s;
-  }
-
-  .slider::before {
-    content: "";
-
-    position: absolute;
-
-    height: 16px;
-    width: 16px;
-
-    left: 3px;
-    bottom: 3px;
-
-    background-color: white;
-
-    border-radius: 50%;
-
-    transition: 0.2s;
-  }
-
-  .switch input:checked + .slider {
-    background-color: #38bdf8;
-  }
-
-  .switch input:checked + .slider::before {
-    transform:
-      translateX(16px);
-  }
-
-  /* =========================================================
-     PULSANTE CAMBIO ZONA
-     ========================================================= */
-
-  .reset-btn {
-    display: none;
-
-    margin:
-      16px
-      auto
-      0;
-
-    padding:
-      10px
-      16px;
-
-    border: none;
-
-    border-radius: 10px;
-
-    background:
-      rgba(255,255,255,0.15);
-
-    color: white;
-
-    font-size: 12px;
-
-    cursor: pointer;
-  }
-
-  .reset-btn.visibile {
-    display: block;
-  }
-
-  /* =========================================================
-     RESPONSIVE
-     ========================================================= */
-
-  @media (max-width: 500px) {
-
-    .skyline {
-      transform: scale(0.85);
-      transform-origin: bottom center;
-    }
-
-    .scritta-brescia {
-      font-size: 18px;
-    }
-  }
-</style>
-</head>
-
-<body>
-
-<!-- =========================================================
-     SKYLINE
-     ========================================================= -->
-
-<div class="skyline" id="skyline">
-
-  <div
-    class="edificio"
-    style="width:26px;height:55px;"
-  ></div>
-
-  <div
-    class="edificio"
-    style="width:22px;height:75px;"
-  ></div>
-
-  <div
-    class="edificio"
-    style="width:30px;height:60px;"
-  ></div>
-
-  <div
-    style="
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-    "
-  >
-    <div class="tetto-torre"></div>
-    <div class="torre"></div>
-  </div>
-
-  <div
-    class="edificio"
-    style="width:28px;height:70px;"
-  ></div>
-
-  <div style="text-align:center;">
-
-    <div class="pallina-cupola"></div>
-
-    <div class="lanterna"></div>
-
-    <div class="cupola"></div>
-
-    <div class="corpo-cupola"></div>
-
-  </div>
-
-  <div
-    class="edificio"
-    style="width:30px;height:65px;"
-  ></div>
-
-  <div
-    class="edificio"
-    style="width:24px;height:50px;"
-  ></div>
-
-  <div
-    class="edificio"
-    style="width:34px;height:80px;"
-  ></div>
-
-  <div
-    class="edificio"
-    style="width:26px;height:60px;"
-  ></div>
-
-  <div
-    class="edificio"
-    style="width:22px;height:45px;"
-  ></div>
-
-</div>
-
-<div class="scritta-brescia">
-  BRESCIA
-</div>
-
-<div id="strato-pioggia"></div>
-
-<div id="strato-grandine"></div>
-
-
-<!-- =========================================================
-     CONTENUTO
-     ========================================================= -->
-
-<div class="contenuto">
-
-  <h1>🌩️ iGrandine</h1>
-
-  <p class="sub">
-    Scegli la zona da monitorare
-  </p>
-
-
-  <!-- =======================================================
-       SELEZIONE COMUNE
-       ======================================================= -->
-
-  <select
-    id="zona-select"
-    onchange="onZonaChange()"
-  >
-
-    <option value="">
-      Scegli una zona...
-    </option>
-
-    <option value="45.5240,10.2176">
-      Brescia Due
-    </option>
-
-    <option value="45.5729,10.0269">
-      Cazzago S. Martino
-    </option>
-
-    <option value="45.4142,10.2481">
-      Bagnolo Mella
-    </option>
-
-    <option value="45.4844,10.2467">
-      Borgosatollo
-    </option>
-
-    <option value="45.5563,9.9679">
-      Coccaglio
-    </option>
-
-    <option value="45.4642,10.5308">
-      Desenzano del Garda
-    </option>
-
-    <option value="45.6867,10.0508">
-      Iseo
-    </option>
-
-    <option value="45.4728,10.0264">
-      Maclodio
-    </option>
-
-    <option value="45.5486,10.1128">
-      Ospitaletto
-    </option>
-
-  </select>
-
-
-  <div class="divisore">
-    oppure
-  </div>
-
-
-  <!-- =======================================================
-       GPS
-       ======================================================= -->
-
-  <button
-    class="pin-btn"
-    id="pin-btn"
-    onclick="usaGPS()"
-    aria-label="Sono qui"
-  >
-
-    <div class="pin">
-
-      <div class="pin-hole"></div>
-
-    </div>
-
-  </button>
-
-  <div class="pin-label">
-    Sono qui
-  </div>
-
-
-  <!-- =======================================================
-       STATO
-       ======================================================= -->
-
-  <div id="stato"></div>
-
-
-  <!-- =======================================================
-       DATI UTENTE
-       ======================================================= -->
-
-  <div
-    class="utente-box"
-    id="utente-box"
-  >
-
-    <div class="utente-titolo">
-      📍 Zona monitorata
-    </div>
-
-    <div
-      class="utente-riga"
-      id="utente-zona"
-    ></div>
-
-    <div
-      class="utente-riga"
-      id="utente-coordinate"
-    ></div>
-
-    <div
-      class="utente-riga"
-      id="utente-id"
-    ></div>
-
-  </div>
-
-
-  <!-- =======================================================
-       CAMBIO ZONA
-       ======================================================= -->
-
-  <button
-    class="reset-btn"
-    id="reset-btn"
-    onclick="cambiaZona()"
-  >
-    🔄 Cambia zona
-  </button>
-
-
-  <!-- =======================================================
-       GEOLOCALIZZAZIONE
-       ======================================================= -->
-
-  <div class="toggle-riga">
-
-    <span>
-      Abilita geolocalizzazione
-    </span>
-
-    <label class="switch">
-
-      <input
-        type="checkbox"
-        id="toggle-geo"
-        onchange="toggleGeo()"
-      >
-
-      <span class="slider"></span>
-
-    </label>
-
-  </div>
-
-</div>
-
-
-<script>
-
-/* ============================================================
-   FIREBASE
-   ============================================================ */
-
-const FIREBASE_BASE =
-  "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app";
-
-
-/* ============================================================
-   GENERAZIONE IDENTIFICATIVO UTENTE
-   ============================================================ */
-
-/*
-   Ogni dispositivo/browser riceve un proprio ID.
-
-   Esempio:
-
-   utente_8f4c9a....
-
-   Questo permette di avere:
-
-   /utenti/utente_A
-   /utenti/utente_B
-   /utenti/utente_C
-
-   invece di una sola posizione condivisa.
-*/
-
-function generaIdUtente() {
-
-  if (
-    window.crypto &&
-    typeof window.crypto.randomUUID === "function"
-  ) {
-
-    return "utente_" +
-      window.crypto.randomUUID()
-        .replace(/-/g, "");
-
-  }
-
-  return "utente_" +
-    Date.now().toString(36) +
-    "_" +
-    Math.random()
-      .toString(36)
-      .substring(2, 15);
-}
-
-
-/* ============================================================
-   ID UTENTE
-   ============================================================ */
-
-function getUserId() {
-
-  let userId =
-    localStorage.getItem("igrandine_user_id");
-
-  if (!userId) {
-
-    userId = generaIdUtente();
-
-    localStorage.setItem(
-      "igrandine_user_id",
-      userId
-    );
-  }
-
-  return userId;
-}
-
-
-const USER_ID = getUserId();
-
-
-/* ============================================================
-   TOPIC NTFY PERSONALE
-   ============================================================ */
-
-/*
-   Ogni utente riceve un topic personale.
-
-   IMPORTANTE:
-
-   Il topic viene salvato anche in Firebase.
-
-   Il programma Python potrà quindi leggere:
-
-   /utenti/utente_xxxxx/ntfyTopic
-
-   e mandare l'avviso solamente a quel topic.
-*/
-
-function generaNtfyTopic() {
-
-  let topic =
-    localStorage.getItem("igrandine_ntfy_topic");
-
-  if (topic) {
-    return topic;
-  }
-
-  let casuale = "";
-
-  if (
-    window.crypto &&
-    typeof window.crypto.getRandomValues === "function"
-  ) {
-
-    const array =
-      new Uint8Array(20);
-
-    window.crypto.getRandomValues(array);
-
-    casuale =
-      Array.from(array)
-        .map(
-          b =>
-            b.toString(16)
-             .padStart(2, "0")
-        )
-        .join("");
-
-  } else {
-
-    casuale =
-      Math.random()
-        .toString(36)
-        .substring(2) +
-      Date.now()
-        .toString(36);
-  }
-
-  topic =
-    "igrandine_" +
-    casuale;
-
-  localStorage.setItem(
-    "igrandine_ntfy_topic",
-    topic
-  );
-
-  return topic;
-}
-
-
-const NTFY_TOPIC =
-  generaNtfyTopic();
-
-
-/* ============================================================
-   URL UTENTE FIREBASE
-   ============================================================ */
-
-const USER_URL =
-  FIREBASE_BASE +
-  "/utenti/" +
-  encodeURIComponent(USER_ID) +
-  ".json";
-
-
-/* ============================================================
-   STATO
-   ============================================================ */
-
-function mostraStato(testo) {
-
-  document.getElementById(
-    "stato"
-  ).innerText = testo;
-}
-
-
-/* ============================================================
-   SALVA POSIZIONE UTENTE
-   ============================================================ */
-
-function salva(
-  lat,
-  lon,
-  nomeVisualizzato
-) {
-
-  mostraStato(
-    "Salvataggio in corso..."
-  );
-
-
-  const dati = {
-
-    lat: Number(lat),
-
-    lon: Number(lon),
-
-    comune:
-      nomeVisualizzato,
-
-    ntfyTopic:
-      NTFY_TOPIC,
-
-    aggiornato:
-      new Date().toISOString()
-
-  };
-
-
-  fetch(
-    USER_URL,
-    {
-      method: "PUT",
-
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
-
-      body:
-        JSON.stringify(dati)
-    }
-  )
-
-  .then(function(response) {
-
-    if (!response.ok) {
-      throw new Error(
-        "Errore Firebase"
-      );
-    }
-
-    mostraStato(
-      "✅ Zona impostata: " +
-      nomeVisualizzato +
-      " (" +
-      Number(lat).toFixed(4) +
-      ", " +
-      Number(lon).toFixed(4) +
-      ")"
-    );
-
-    aggiornaInterfaccia(
-      nomeVisualizzato,
-      lat,
-      lon
-    );
-
-  })
-
-  .catch(function(error) {
-
-    console.error(error);
-
-    mostraStato(
-      "❌ Errore nel salvataggio, riprova"
-    );
-
-  });
-
-}
-
-
-/* ============================================================
-   CAMBIO COMUNE
-   ============================================================ */
-
-function onZonaChange() {
-
-  const select =
-    document.getElementById(
-      "zona-select"
-    );
-
-  const valore =
-    select.value;
-
-  if (!valore) {
-    return;
-  }
-
-
-  const nome =
-    select.options[
-      select.selectedIndex
-    ].text.trim();
-
-
-  const parti =
-    valore.split(",");
-
-
-  const lat =
-    parseFloat(parti[0]);
-
-  const lon =
-    parseFloat(parti[1]);
-
-
-  if (
-    Number.isNaN(lat) ||
-    Number.isNaN(lon)
-  ) {
-
-    mostraStato(
-      "❌ Coordinate non valide"
-    );
-
-    return;
-  }
-
-
-  salva(
-    lat,
-    lon,
-    nome
-  );
-
-}
-
-
-/* ============================================================
-   GPS
-   ============================================================ */
-
-function usaGPS() {
-
-  const abilitata =
-    localStorage.getItem(
-      "geoAbilitata"
-    ) === "true";
-
-
-  if (!abilitata) {
-
-    mostraStato(
-      "Geolocalizzazione disattivata: " +
-      "attivala qui sotto per usarla"
-    );
-
-    return;
-  }
-
-
-  mostraStato(
-    "📍 Rilevamento posizione in corso..."
-  );
-
-
-  if (!navigator.geolocation) {
-
-    mostraStato(
-      "❌ Il browser non supporta " +
-      "la geolocalizzazione"
-    );
-
-    return;
-  }
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    function(pos) {
-
-      const lat =
-        pos.coords.latitude;
-
-      const lon =
-        pos.coords.longitude;
-
-
-      salva(
-        lat,
-        lon,
-        "Posizione attuale"
-      );
-
-    },
-
-
-    function(err) {
-
-      let msg =
-        "Errore sconosciuto " +
-        "(codice " +
-        err.code +
-        ")";
-
-
-      if (
-        err.code ===
-        err.PERMISSION_DENIED
-      ) {
-
-        msg =
-          "❌ Permesso negato " +
-          "(codice 1)";
-
-      }
-
-      else if (
-        err.code ===
-        err.POSITION_UNAVAILABLE
-      ) {
-
-        msg =
-          "❌ Posizione non disponibile " +
-          "(codice 2)";
-
-      }
-
-      else if (
-        err.code ===
-        err.TIMEOUT
-      ) {
-
-        msg =
-          "❌ Richiesta scaduta " +
-          "(codice 3)";
-      }
-
-
-      mostraStato(msg);
-
-    },
-
-    {
-      timeout: 15000,
-      enableHighAccuracy: true
-    }
-
-  );
-
-}
-
-
-/* ============================================================
-   TOGGLE GEOLOCALIZZAZIONE
-   ============================================================ */
-
-function toggleGeo() {
-
-  const checkbox =
-    document.getElementById(
-      "toggle-geo"
-    );
-
-  const pinBtn =
-    document.getElementById(
-      "pin-btn"
-    );
-
-
-  localStorage.setItem(
-    "geoAbilitata",
-    checkbox.checked
-      ? "true"
-      : "false"
-  );
-
-
-  pinBtn.classList.toggle(
-    "disabilitato",
-    !checkbox.checked
-  );
-
-}
-
-
-/* ============================================================
-   AGGIORNA INTERFACCIA
-   ============================================================ */
-
-function aggiornaInterfaccia(
-  nome,
-  lat,
-  lon
-) {
-
-  document.getElementById(
-    "utente-zona"
-  ).innerText =
-    "Comune/zona: " + nome;
-
-
-  document.getElementById(
-    "utente-coordinate"
-  ).innerText =
-    "Coordinate: " +
-    Number(lat).toFixed(6) +
-    ", " +
-    Number(lon).toFixed(6);
-
-
-  document.getElementById(
-    "utente-id"
-  ).innerText =
-    "ID dispositivo: " +
-    USER_ID;
-
-
-  document.getElementById(
-    "utente-box"
-  ).classList.add(
-    "visibile"
-  );
-
-
-  document.getElementById(
-    "reset-btn"
-  ).classList.add(
-    "visibile"
-  );
-
-}
-
-
-/* ============================================================
-   CAMBIA ZONA
-   ============================================================ */
-
-function cambiaZona() {
-
-  document.getElementById(
-    "zona-select"
-  ).value = "";
-
-
-  document.getElementById(
-    "utente-box"
-  ).classList.remove(
-    "visibile"
-  );
-
-
-  document.getElementById(
-    "reset-btn"
-  ).classList.remove(
-    "visibile"
-  );
-
-
-  mostraStato(
-    "Scegli una nuova zona da monitorare."
-  );
-
-}
-
-
-/* ============================================================
-   CARICA POSIZIONE SALVATA
-   ============================================================ */
-
-function caricaUtente() {
-
-  fetch(USER_URL)
-
-    .then(function(response) {
-
-      if (!response.ok) {
-        throw new Error(
-          "Errore caricamento Firebase"
-        );
-      }
-
-      return response.json();
-
-    })
-
-    .then(function(data) {
-
-      if (
-        !data ||
-        typeof data !== "object"
-      ) {
-
-        return;
-      }
-
-
-      if (
-        data.lat == null ||
-        data.lon == null
-      ) {
-
-        return;
-      }
-
-
-      const lat =
-        Number(data.lat);
-
-      const lon =
-        Number(data.lon);
-
-
-      const nome =
-        data.comune ||
-        "Zona personalizzata";
-
-
-      aggiornaInterfaccia(
-        nome,
-        lat,
-        lon
-      );
-
-
-      /*
-         Se la posizione corrisponde
-         a una delle zone del menu,
-         selezioniamo automaticamente
-         il comune.
-      */
-
-      const select =
-        document.getElementById(
-          "zona-select"
-        );
-
-
-      let trovato = false;
-
-
-      for (
-        let i = 0;
-        i < select.options.length;
-        i++
-      ) {
-
-        const valore =
-          select.options[i].value;
-
-
-        if (!valore) {
-          continue;
-        }
-
-
-        const parti =
-          valore.split(",");
-
-
-        const optionLat =
-          Number(parti[0]);
-
-        const optionLon =
-          Number(parti[1]);
-
-
-        /*
-           Tolleranza per confrontare
-           le coordinate.
-        */
-
-        if (
-          Math.abs(
-            optionLat - lat
-          ) < 0.00001
-          &&
-          Math.abs(
-            optionLon - lon
-          ) < 0.00001
-        ) {
-
-          select.selectedIndex =
-            i;
-
-          trovato = true;
-
-          break;
-        }
-
-      }
-
-
-      if (!trovato) {
-
-        select.value = "";
-
-      }
-
-
-      mostraStato(
-        "📍 Zona monitorata: " +
-        nome
-      );
-
-    })
-
-    .catch(function(error) {
-
-      console.log(
-        "Nessuna posizione precedente:",
-        error
-      );
-
-    });
-
-}
-
-
-/* ============================================================
-   INIZIALIZZAZIONE
-   ============================================================ */
-
-(function () {
-
-  const salvato =
-    localStorage.getItem(
-      "geoAbilitata"
-    );
-
-
-  const abilitata =
-    salvato === null
-      ? true
-      : salvato === "true";
-
-
-  const checkbox =
-    document.getElementById(
-      "toggle-geo"
-    );
-
-
-  const pinBtn =
-    document.getElementById(
-      "pin-btn"
-    );
-
-
-  checkbox.checked =
-    abilitata;
-
-
-  pinBtn.classList.toggle(
-    "disabilitato",
-    !abilitata
-  );
-
-
-  if (salvato === null) {
-
-    localStorage.setItem(
-      "geoAbilitata",
-      "true"
-    );
-
-  }
-
-})();
-
-
-/* ============================================================
-   CARICAMENTO UTENTE
-   ============================================================ */
-
-caricaUtente();
-
-
-/* ============================================================
-   ANIMAZIONE PIOGGIA
-   ============================================================ */
-
-(function () {
-
-  const strPioggia =
-    document.getElementById(
-      "strato-pioggia"
-    );
-
-
-  const nGocce = 60;
-
-
-  for (
-    let i = 0;
-    i < nGocce;
-    i++
-  ) {
-
-    const goccia =
-      document.createElement(
-        "div"
-      );
-
-
-    goccia.className =
-      "goccia";
-
-
-    goccia.style.left =
-      Math.random() * 100 +
-      "vw";
-
-
-    const durata =
-      0.5 +
-      Math.random() * 0.5;
-
-
-    goccia.style.animationDuration =
-      durata + "s";
-
-
-    goccia.style.animationDelay =
-      Math.random() *
-      durata +
-      "s";
-
-
-    goccia.style.height =
-      14 +
-      Math.random() * 10 +
-      "px";
-
-
-    strPioggia.appendChild(
-      goccia
-    );
-
-  }
-
-
-  /* ==========================================================
-     ANIMAZIONE GRANDINE
-     ========================================================== */
-
-  const strGrandine =
-    document.getElementById(
-      "strato-grandine"
-    );
-
-
-  const nChicchi = 35;
-
-
-  for (
-    let i = 0;
-    i < nChicchi;
-    i++
-  ) {
-
-    const chicco =
-      document.createElement(
-        "div"
-      );
-
-
-    chicco.className =
-      "grandine";
-
-
-    chicco.style.left =
-      Math.random() * 100 +
-      "vw";
-
-
-    const durata =
-      1.2 +
-      Math.random() * 1.8;
-
-
-    chicco.style.animationDuration =
-      durata + "s";
-
-
-    chicco.style.animationDelay =
-      Math.random() *
-      durata +
-      "s";
-
-
-    const dimensione =
-      4 +
-      Math.random() * 5;
-
-
-    chicco.style.width =
-      dimensione + "px";
-
-
-    chicco.style.height =
-      dimensione + "px";
-
-
-    strGrandine.appendChild(
-      chicco
-    );
-
-  }
-
-
-  /* ==========================================================
-     CAMBIO FASE
-     ========================================================== */
-
-  const DURATA_FASE_MS =
-    9000;
-
-
-  setInterval(
-    function () {
-
-      document.body.classList.toggle(
-        "fase-grandine"
-      );
-
-    },
-    DURATA_FASE_MS
-  );
-
-})();
-
-</script>
-
-</body>
-</html>
