@@ -2,9 +2,9 @@ import math
 import requests
 
 # ============ CONFIGURA QUI ============
-LAT = 45.4642      # <-- la tua latitudine (Google Maps: tasto destro sul punto -> compaiono i numeri)
-LON = 9.1900       # <-- la tua longitudine
-NTFY_TOPIC = "cambia-questo-nome-13579"   # <-- il topic scelto nell'app ntfy
+LAT = 45.56895      # <-- la tua latitudine (Google Maps: tasto destro sul punto -> compaiono i numeri)
+LON = 10.02529       # <-- la tua longitudine
+NTFY_TOPIC = "iGrandine"   # <-- il topic scelto nell'app ntfy
 # ========================================
 
 # Soglie di allarme: puoi modificarle se vuoi essere avvisato prima o dopo
