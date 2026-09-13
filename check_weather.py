@@ -1764,12 +1764,17 @@ def main():
 if send_notification(
     message,
     level,
-    True
+    forecast["hail_risk"]
 ):
     save_state(state)
 
     print(
         "Notifica inviata."
+    )
+
+else:
+    print(
+        "Notifica non inviata."
     )
 
 
