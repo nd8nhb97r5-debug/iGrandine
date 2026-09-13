@@ -284,15 +284,40 @@ function getUserId() {
 
 function salva(lat, lon, nomeVisualizzato) {
   document.getElementById("stato").innerText = "Salvataggio in corso...";
-  const dati = { lat: lat, lon: lon, aggiornato: new Date().toISOString() };
-  fetch(FIREBASE_URL, {
+
+  const userId = getUserId();
+
+  const dati = {
+    comune: nomeVisualizzato,
+    lat: lat,
+    lon: lon,
+    aggiornato: new Date().toISOString()
+  };
+
+  fetch(FIREBASE_BASE_URL + "/" + userId + ".json", {
     method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(dati)
-  }).then(function () {
+  })
+  .then(function (response) {
+    if (!response.ok) {
+      throw new Error("Errore Firebase");
+    }
+
     document.getElementById("stato").innerText =
-      "Zona impostata: " + nomeVisualizzato + " (" + lat.toFixed(4) + ", " + lon.toFixed(4) + ")";
-  }).catch(function () {
-    document.getElementById("stato").innerText = "Errore nel salvataggio, riprova";
+      "Zona impostata: " +
+      nomeVisualizzato +
+      " (" +
+      lat.toFixed(4) +
+      ", " +
+      lon.toFixed(4) +
+      ")";
+  })
+  .catch(function () {
+    document.getElementById("stato").innerText =
+      "Errore nel salvataggio, riprova";
   });
 }
 
