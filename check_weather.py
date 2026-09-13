@@ -1766,18 +1766,12 @@ if send_notification(
     level,
     True
 ):
-):
     save_state(state)
 
     print(
         "Notifica inviata."
     )
 
-    else:
-
-        print(
-            "Notifica non inviata."
-        )
 
 
 if __name__ == "__main__":
