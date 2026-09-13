@@ -1546,13 +1546,7 @@ def main():
     # DECIDI NOTIFICA
     # --------------------------------------------------------
 
-    notify = should_notify(
-        previous,
-        level,
-        score,
-        eta,
-        forecast["alerts"]
-    )
+    notify = True
 
     # --------------------------------------------------------
     # AGGIORNA STATO ANCHE SENZA NOTIFICA
@@ -1770,7 +1764,7 @@ def main():
 if send_notification(
     message,
     level,
-    forecast["hail_risk"]
+    forecast["True"]
 ):
     save_state(state)
 
