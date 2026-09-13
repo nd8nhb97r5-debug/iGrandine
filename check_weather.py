@@ -1,13 +1,14 @@
 import math
+import os
 import requests
 
 # ============ CONFIGURA QUI ============
-LAT = 45.56895      # <-- la tua latitudine (Google Maps: tasto destro sul punto -> compaiono i numeri)
-LON = 10.02529       # <-- la tua longitudine
-NTFY_TOPIC = "iGrandine-7x9kQ2mZ"   # <-- il topic scelto nell'app ntfy
+DEFAULT_LAT = 45.56895     # <-- le coordinate che avevi gia' inserito (usate solo se non hai mai premuto "Aggiorna posizione")
+DEFAULT_LON = 10.02529
+FIREBASE_URL = "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app/posizione.json"
+NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "")   # letto dal Secret di GitHub (Fase E) - non scrivere qui il nome del topic
 # ========================================
 
-# Soglie di allarme: puoi modificarle se vuoi essere avvisato prima o dopo
 SOGLIA_PIOGGIA_MM_H = 10     # mm/ora di pioggia = temporale forte
 SOGLIA_RAFFICHE_KMH = 60     # km/h di raffica di vento
 SOGLIA_CAPE = 1500           # indice di energia atmosferica (temporali violenti/grandine)
@@ -15,10 +16,23 @@ SOGLIA_CAPE = 1500           # indice di energia atmosferica (temporali violenti
 RAGGIO_RICERCA_METRI = 3000  # raggio in cui cercare parcheggi coperti e rifugi
 
 
-def get_weather():
+def get_location():
+    """Legge l'ultima posizione salvata dal telefono. Se non c'e', usa quella di riserva."""
+    try:
+        r = requests.get(FIREBASE_URL, timeout=10)
+        r.raise_for_status()
+        dati = r.json()
+        if dati and "lat" in dati and "lon" in dati:
+            return dati["lat"], dati["lon"]
+    except Exception:
+        pass
+    return DEFAULT_LAT, DEFAULT_LON
+
+
+def get_weather(lat, lon):
     url = (
         "https://api.open-meteo.com/v1/forecast"
-        f"?latitude={LAT}&longitude={LON}"
+        f"?latitude={lat}&longitude={lon}"
         "&minutely_15=precipitation,wind_gusts_10m"
         "&hourly=cape"
         "&forecast_days=1"
@@ -54,15 +68,15 @@ def haversine_km(lat1, lon1, lat2, lon2):
     return 2 * R * math.asin(math.sqrt(a))
 
 
-def cerca_rifugi():
+def cerca_rifugi(lat, lon):
     """Cerca su OpenStreetMap parcheggi coperti (auto) e luoghi al chiuso (a piedi/bici) vicini."""
     query = f"""
     [out:json][timeout:25];
     (
-      nwr["amenity"="parking"]["parking"~"multi-storey|underground"](around:{RAGGIO_RICERCA_METRI},{LAT},{LON});
-      nwr["amenity"="parking"]["covered"="yes"](around:{RAGGIO_RICERCA_METRI},{LAT},{LON});
-      nwr["shop"~"mall|department_store"](around:{RAGGIO_RICERCA_METRI},{LAT},{LON});
-      nwr["amenity"="shelter"](around:{RAGGIO_RICERCA_METRI},{LAT},{LON});
+      nwr["amenity"="parking"]["parking"~"multi-storey|underground"](around:{RAGGIO_RICERCA_METRI},{lat},{lon});
+      nwr["amenity"="parking"]["covered"="yes"](around:{RAGGIO_RICERCA_METRI},{lat},{lon});
+      nwr["shop"~"mall|department_store"](around:{RAGGIO_RICERCA_METRI},{lat},{lon});
+      nwr["amenity"="shelter"](around:{RAGGIO_RICERCA_METRI},{lat},{lon});
     );
     out center tags;
     """
@@ -81,7 +95,7 @@ def cerca_rifugi():
             continue
         tags = el.get("tags", {})
         nome = tags.get("name", "Senza nome")
-        dist = haversine_km(LAT, LON, lat_el, lon_el)
+        dist = haversine_km(lat, lon, lat_el, lon_el)
         voce = {"nome": nome, "dist": round(dist, 1), "lat": lat_el, "lon": lon_el}
 
         if tags.get("amenity") == "parking":
@@ -105,6 +119,9 @@ def formatta_luoghi(lista, etichetta):
 
 
 def send_notification(message):
+    if not NTFY_TOPIC:
+        print("ATTENZIONE: NTFY_TOPIC non impostato, notifica non inviata")
+        return
     requests.post(
         f"https://ntfy.sh/{NTFY_TOPIC}",
         data=message.encode("utf-8"),
@@ -118,14 +135,15 @@ def send_notification(message):
 
 
 if __name__ == "__main__":
-    dati = get_weather()
+    lat, lon = get_location()
+    dati = get_weather(lat, lon)
     allarmi = check_risk(dati)
     if allarmi:
-        parcheggi, rifugi = cerca_rifugi()
+        parcheggi, rifugi = cerca_rifugi(lat, lon)
         messaggio = " | ".join(allarmi) + "\n\n"
         messaggio += formatta_luoghi(parcheggi, "Parcheggi coperti vicini (auto)") + "\n\n"
         messaggio += formatta_luoghi(rifugi, "Rifugi vicini (a piedi/bici)")
         send_notification(messaggio)
-        print("Notifica inviata:", allarmi)
+        print("Notifica inviata:", allarmi, "- posizione usata:", lat, lon)
     else:
-        print("Nessun rischio rilevato in questo controllo.")
+        print("Nessun rischio rilevato. Posizione usata:", lat, lon)
