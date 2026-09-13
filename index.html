@@ -1,234 +1,572 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iGrandine</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: white;
+    overflow-x: hidden;
+  }
+  body {
+    min-height: 100vh;
+    position: relative;
+    background: linear-gradient(180deg, #1e1b4b 0%, #7c2d92 30%, #ea580c 65%, #fb923c 100%);
+    background-size: 200% 200%;
+    animation: cieloMuove 25s ease infinite;
+    padding-bottom: 190px;
+  }
+  @keyframes cieloMuove {
+    0%   { background-position: 50% 0%; }
+    50%  { background-position: 50% 100%; }
+    100% { background-position: 50% 0%; }
+  }
+
+  .skyline {
+    position: fixed;
+    bottom: 46px; left: 0; right: 0;
+    height: 160px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .edificio { background: #1c1024; margin-right: 4px; position: relative; }
+  .finestra { position: absolute; width: 4px; height: 4px; background: #fde68a; opacity: 0.6; }
+
+  .corpo-cupola { width: 54px; height: 55px; background: #1c1024; }
+  .cupola { width: 66px; height: 34px; background: #1c1024; border-radius: 50% 50% 0 0; margin: 0 auto; }
+  .lanterna { width: 10px; height: 16px; background: #1c1024; margin: 0 auto; }
+  .pallina-cupola { width: 12px; height: 12px; border-radius: 50%; background: #1c1024; margin: 0 auto; }
+
+  .torre { width: 16px; height: 95px; background: #1c1024; margin-right: 4px; }
+  .tetto-torre {
+    width: 0; height: 0;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-bottom: 16px solid #1c1024;
+    margin: 0 auto;
+  }
+
+  .scritta-brescia {
+    position: fixed;
+    bottom: 12px; left: 0; right: 0;
+    text-align: center;
+    z-index: 1;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #1c1024;
+    text-shadow: 0 1px 6px rgba(255,255,255,0.25);
+    pointer-events: none;
+  }
+
+  #strato-pioggia, #strato-grandine {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden;
+    transition: opacity 1.8s ease;
+  }
+  #strato-grandine { opacity: 0; }
+  body.fase-grandine #strato-pioggia { opacity: 0; }
+  body.fase-grandine #strato-grandine { opacity: 1; }
+
+  .goccia {
+    position: absolute;
+    top: -30px;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(224,242,254,0), rgba(224,242,254,0.85));
+    animation-name: cadeGiuVeloce;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes cadeGiuVeloce {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(105vh); }
+  }
+
+  .grandine {
+    position: absolute;
+    top: -20px;
+    background: #e0f2fe;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(255,255,255,0.6);
+    animation-name: cadeGiu;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes cadeGiu {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+    100% { transform: translateY(105vh) rotate(200deg); opacity: 0.9; }
+  }
+
+  .contenuto {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    padding: 40px 20px 10px 20px;
+  }
+  h1 { font-size: 26px; margin: 0 0 4px 0; }
+  p.sub { opacity: 0.85; margin: 0 0 22px 0; font-size: 14px; }
+
+  select {
+    width: 100%;
+    max-width: 320px;
+    font-size: 16px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: none;
+    background: #1e293b;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 0 18px rgba(56,189,248,0.25);
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .divisore {
+    margin: 30px auto;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0.6;
+    font-size: 13px;
+  }
+  .divisore::before, .divisore::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .pin-btn { background: none; border: none; padding: 0; cursor: pointer; }
+  .pin-btn.disabilitato { opacity: 0.35; pointer-events: none; }
+  .pin {
+    width: 68px;
+    height: 68px;
+    background: #ef4444;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 0 24px rgba(239,68,68,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  .pin-btn:active .pin { transform: rotate(-45deg) scale(0.94); }
+  .pin-hole {
+    width: 26px;
+    height: 26px;
+    background: white;
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+  .pin-label {
+    margin-top: 12px;
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  #stato { margin-top: 26px; font-size: 14px; min-height: 22px; opacity: 0.95; }
+
+  .coord-brescia { font-size: 11px; font-weight: 400; letter-spacing: 1px; opacity: 0.75; margin-top: 2px; }
+
+  .toggle-riga {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  .switch { position: relative; display: inline-block; width: 38px; height: 22px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background-color: #4b5563;
+    border-radius: 22px;
+    transition: 0.2s;
+  }
+  .slider::before {
+    content: "";
+    position: absolute;
+    height: 16px; width: 16px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .switch input:checked + .slider { background-color: #38bdf8; }
+  .switch input:checked + .slider::before { transform: translateX(16px); }
+</style>
+</head>
+<body>
+
+<div class="skyline" id="skyline">
+  <div class="edificio" style="width:26px;height:55px;"></div>
+  <div class="edificio" style="width:22px;height:75px;"></div>
+  <div class="edificio" style="width:30px;height:60px;"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <div class="tetto-torre"></div>
+    <div class="torre"></div>
+  </div>
+  <div class="edificio" style="width:28px;height:70px;"></div>
+  <div style="text-align:center;">
+    <div class="pallina-cupola"></div>
+    <div class="lanterna"></div>
+    <div class="cupola"></div>
+    <div class="corpo-cupola"></div>
+  </div>
+  <div class="edificio" style="width:30px;height:65px;"></div>
+  <div class="edificio" style="width:24px;height:50px;"></div>
+  <div class="edificio" style="width:34px;height:80px;"></div>
+  <div class="edificio" style="width:26px;height:60px;"></div>
+  <div class="edificio" style="width:22px;height:45px;"></div>
+</div>
+<div class="scritta-brescia">BRESCIA<div class="coord-brescia">45.5240, 10.2176</div></div>
+<div id="strato-pioggia"></div>
+<div id="strato-grandine"></div>
+
+<div class="contenuto">
+  <h1>🌩️ iGrandine</h1>
+  <p class="sub">Scegli la zona da monitorare</p>
+
+  <select id="zona-select" onchange="onZonaChange()">
+    <option value="">Scegli un comune...</option>
+    <option value="45.3050953,10.4106894">Acquafredda</option>
+    <option value="45.6201335,9.9575541">Adro</option>
+    <option value="45.6486747,10.3543357">Agnosine</option>
+    <option value="45.2671654,10.1495511">Alfianello</option>
+    <option value="45.7653393,10.49473">Anfo</option>
+    <option value="45.8913495,10.1475406">Angolo Terme</option>
+    <option value="45.851892,10.1660982">Artogne</option>
+    <option value="45.455364,10.1175645">Azzano Mella</option>
+    <option value="45.4296229,10.1860514">Bagnolo Mella</option>
+    <option value="45.8231864,10.4635029">Bagolino</option>
+    <option value="45.4050808,10.0558309">Barbariga</option>
+    <option value="45.6792624,10.4073605">Barghe</option>
+    <option value="45.3266322,10.1280267">Bassano Bresciano</option>
+    <option value="45.4953349,10.4091313">Bedizzole</option>
+    <option value="45.5023196,10.0315736">Berlingo</option>
+    <option value="46.0925449,10.3328977">Berzo Demo</option>
+    <option value="45.9322167,10.2793066">Berzo Inferiore</option>
+    <option value="45.8824412,10.3589791">Bienno</option>
+    <option value="45.6742267,10.3310392">Bione</option>
+    <option value="45.3485464,9.967589">Borgo San Giacomo</option>
+    <option value="45.4763482,10.2402896">Borgosatollo</option>
+    <option value="45.9463171,10.1991177">Borno</option>
+    <option value="45.5427718,10.3070813">Botticino</option>
+    <option value="45.7901654,10.2683094">Bovegno</option>
+    <option value="45.5929206,10.2412181">Bovezzo</option>
+    <option value="45.4568563,10.0443841">Brandico</option>
+    <option value="45.9896921,10.3429834">Braone</option>
+    <option value="45.9339231,10.4262024">Breno</option>
+    <option value="45.5415526,10.2118019">Brescia (centro)</option>
+    <option value="45.524,10.2176">Brescia - Via Aldo Moro</option>
+    <option value="45.6446654,10.1558907">Brione</option>
+    <option value="45.6166391,10.3339894">Caino</option>
+    <option value="45.4584952,10.3956036">Calcinato</option>
+    <option value="45.5238616,10.4614806">Calvagese della Riviera</option>
+    <option value="45.3490641,10.3453579">Calvisano</option>
+    <option value="46.029861,10.3466388">Capo di Ponte</option>
+    <option value="45.753239,10.5453671">Capovalle</option>
+    <option value="45.454779,10.1290043">Capriano del Colle</option>
+    <option value="45.6383743,9.9303969">Capriolo</option>
+    <option value="45.3670367,10.4361617">Carpenedolo</option>
+    <option value="45.5635713,10.1152705">Castegnato</option>
+    <option value="45.4960787,10.1441602">Castel Mella</option>
+    <option value="45.5019393,9.9441945">Castelcovati</option>
+    <option value="45.4715911,10.2982006">Castenedolo</option>
+    <option value="45.6784443,10.2846462">Casto</option>
+    <option value="45.5129004,9.9802548">Castrezzato</option>
+    <option value="45.5796169,10.0258952">Cazzago San Martino</option>
+    <option value="46.0770081,10.3488161">Cedegolo</option>
+    <option value="45.5842412,10.1803102">Cellatica</option>
+    <option value="46.0035353,10.3244304">Cerveno</option>
+    <option value="46.0022944,10.3516251">Ceto</option>
+    <option value="46.0623095,10.4432086">Cevo</option>
+    <option value="45.5387248,9.9251619">Chiari</option>
+    <option value="45.3079736,10.1921324">Cigole</option>
+    <option value="46.0237395,10.3651139">Cimbergo</option>
+    <option value="45.9444587,10.2791907">Cividate Camuno</option>
+    <option value="45.5637534,9.9743178">Coccaglio</option>
+    <option value="45.583964,10.2136365">Collebeato</option>
+    <option value="45.8109034,10.3338726">Collio</option>
+    <option value="45.5774872,9.9390689">Cologne</option>
+    <option value="45.47158,9.9524529">Comezzano-Cizzago</option>
+    <option value="45.5998218,10.22268">Concesio</option>
+    <option value="45.6322979,9.9995829">Corte Franca</option>
+    <option value="46.1652608,10.2365387">Corteno Golgi</option>
+    <option value="45.4440868,10.0045477">Corzano</option>
+    <option value="45.8972403,10.195664">Darfo Boario Terme</option>
+    <option value="45.4097855,10.0927962">Dello</option>
+    <option value="45.4714531,10.5333351">Desenzano del Garda</option>
+    <option value="46.1804266,10.3298933">Edolo</option>
+    <option value="45.5999847,9.9671855">Erbusco</option>
+    <option value="45.9256174,10.2493838">Esine</option>
+    <option value="45.232748,10.3209713">Fiesse</option>
+    <option value="45.4827412,10.1789011">Flero</option>
+    <option value="45.2533853,10.2925442">Gambara</option>
+    <option value="45.6291846,10.5605473">Gardone Riviera</option>
+    <option value="45.6889709,10.18562">Gardone Val Trompia</option>
+    <option value="45.6885992,10.6617327">Gargnano</option>
+    <option value="45.5848291,10.4418793">Gavardo</option>
+    <option value="45.406043,10.2755113">Ghedi</option>
+    <option value="45.8655036,10.1837762">Gianico</option>
+    <option value="45.289061,10.2698393">Gottolengo</option>
+    <option value="45.5876305,10.1533423">Gussago</option>
+    <option value="45.7961896,10.5142595">Idro</option>
+    <option value="46.2236198,10.3686536">Incudine</option>
+    <option value="45.770769,10.283998">Irma</option>
+    <option value="45.721871,10.0670398">Iseo</option>
+    <option value="45.3092708,10.3220654">Isorella</option>
+    <option value="45.7392699,10.4392504">Lavenone</option>
+    <option value="45.3680207,10.2178501">Leno</option>
+    <option value="45.8223979,10.7966037">Limone sul Garda</option>
+    <option value="45.7175806,10.2748809">Lodrino</option>
+    <option value="45.483501,10.0537313">Lograto</option>
+    <option value="45.4594681,10.4870399">Lonato del Garda</option>
+    <option value="45.4377957,10.0597356">Longhena</option>
+    <option value="45.9833262,10.3165263">Losine</option>
+    <option value="45.9934033,10.248447">Lozio</option>
+    <option value="45.6474809,10.2654082">Lumezzane</option>
+    <option value="45.4767407,10.0434808">Maclodio</option>
+    <option value="45.781294,10.6166114">Magasa</option>
+    <option value="45.4537996,10.0788424">Mairano</option>
+    <option value="45.9622898,10.273403">Malegno</option>
+    <option value="46.1222475,10.3222895">Malonno</option>
+    <option value="45.5562007,10.5753588">Manerba del Garda</option>
+    <option value="45.3534331,10.140792">Manerbio</option>
+    <option value="45.7104206,10.2193298">Marcheno</option>
+    <option value="45.7494815,10.2924586">Marmentino</option>
+    <option value="45.7486627,10.0885142">Marone</option>
+    <option value="45.4952,10.3231">Mazzano</option>
+    <option value="45.2728593,10.1916486">Milzano</option>
+    <option value="45.5266444,10.5346349">Moniga del Garda</option>
+    <option value="46.211661,10.3399586">Monno</option>
+    <option value="45.7115733,10.0753208">Monte Isola</option>
+    <option value="45.6333738,10.0952081">Monticelli Brusati</option>
+    <option value="45.4135375,10.367213">Montichiari</option>
+    <option value="45.443275,10.2293055">Montirone</option>
+    <option value="45.7164053,10.3404308">Mura</option>
+    <option value="45.5618121,10.463527">Muscoline</option>
+    <option value="45.5859779,10.2886207">Nave</option>
+    <option value="45.9773255,10.3341497">Niardo</option>
+    <option value="45.5450757,10.3841257">Nuvolento</option>
+    <option value="45.5357069,10.3743283">Nuvolera</option>
+    <option value="45.6465477,10.3875607">Odolo</option>
+    <option value="45.3859306,10.1173099">Offlaga</option>
+    <option value="45.6302838,10.129867">Ome</option>
+    <option value="46.0173039,10.327711">Ono San Pietro</option>
+    <option value="45.4055212,9.9258238">Orzinuovi</option>
+    <option value="45.4199762,9.9638858">Orzivecchi</option>
+    <option value="45.549143,10.0771363">Ospitaletto</option>
+    <option value="45.96546,10.2383418">Ossimo</option>
+    <option value="45.5079657,10.5165377">Padenghe sul Garda</option>
+    <option value="45.5883797,10.0795033">Paderno Franciacorta</option>
+    <option value="46.067035,10.2327562">Paisco Loveno</option>
+    <option value="45.554987,10.4092394">Paitone</option>
+    <option value="45.5964593,9.8863806">Palazzolo sull'Oglio</option>
+    <option value="45.662001,9.9565226">Paratico</option>
+    <option value="46.0312019,10.370292">Paspardo</option>
+    <option value="45.5996034,10.0627657">Passirano</option>
+    <option value="45.3009379,10.2085088">Pavone del Mella</option>
+    <option value="45.7452517,10.3389518">Pertica Alta</option>
+    <option value="45.7668253,10.364866">Pertica Bassa</option>
+    <option value="45.7846565,10.221184">Pezzaze</option>
+    <option value="45.8442967,10.1504402">Pian Camuno</option>
+    <option value="45.9196898,10.22633">Piancogno</option>
+    <option value="45.8026557,10.1061663">Pisogne</option>
+    <option value="45.6610926,10.1239894">Polaveno</option>
+    <option value="45.5498713,10.5038886">Polpenazze del Garda</option>
+    <option value="45.423026,9.9969288">Pompiano</option>
+    <option value="45.4608749,10.1738877">Poncarale</option>
+    <option value="46.2602731,10.5090969">Ponte di Legno</option>
+    <option value="45.2713659,10.0925621">Pontevico</option>
+    <option value="45.5732317,9.8563557">Pontoglio</option>
+    <option value="45.4036477,10.6294478">Pozzolengo</option>
+    <option value="45.267063,10.2176163">Pralboino</option>
+    <option value="45.6648322,10.3815639">Preseglie</option>
+    <option value="45.5461984,10.4144503">Prevalle</option>
+    <option value="45.6872414,10.4498406">Provaglio Val Sabbia</option>
+    <option value="45.6341322,10.0463434">Provaglio d'Iseo</option>
+    <option value="45.5667457,10.5132968">Puegnago sul Garda</option>
+    <option value="45.3085418,10.0037613">Quinzano d'Oglio</option>
+    <option value="45.2705088,10.3742664">Remedello</option>
+    <option value="45.5071605,10.3324897">Rezzato</option>
+    <option value="45.4587364,9.9149236">Roccafranca</option>
+    <option value="45.5974705,10.1075918">Rodengo Saiano</option>
+    <option value="45.5270162,10.1601758">Roncadelle</option>
+    <option value="45.5306402,10.0171485">Rovato</option>
+    <option value="45.6161126,10.4956113">Roè Volciano</option>
+    <option value="45.4867639,9.8868467">Rudiano</option>
+    <option value="45.6520578,10.422202">Sabbio Chiese</option>
+    <option value="45.7147766,10.1103607">Sale Marasino</option>
+    <option value="45.6180372,10.5263488">Salò</option>
+    <option value="45.5866807,10.5499017">San Felice del Benaco</option>
+    <option value="45.3062252,10.148419">San Gervasio Bresciano</option>
+    <option value="45.3770268,10.0338604">San Paolo</option>
+    <option value="45.4914595,10.2174509">San Zeno Naviglio</option>
+    <option value="45.6521677,10.20055">Sarezzo</option>
+    <option value="46.1202191,10.4950375">Saviore dell'Adamello</option>
+    <option value="46.0569667,10.3436514">Sellero</option>
+    <option value="45.2443051,10.1931917">Seniga</option>
+    <option value="45.5646052,10.3701811">Serle</option>
+    <option value="45.47602,10.6173207">Sirmione</option>
+    <option value="45.5287935,10.511195">Soiano del Lago</option>
+    <option value="46.1635006,10.3533728">Sonico</option>
+    <option value="45.6900001,10.1002926">Sulzano</option>
+    <option value="45.7406927,10.2375432">Tavernole sul Mella</option>
+    <option value="46.2490256,10.4672452">Temù</option>
+    <option value="45.7550061,10.6982623">Tignale</option>
+    <option value="45.5131782,10.1180706">Torbole Casaglia</option>
+    <option value="45.636612,10.6046012">Toscolano-Maderno</option>
+    <option value="45.5233421,10.0833398">Travagliato</option>
+    <option value="45.789813,10.7356659">Tremosine sul Garda</option>
+    <option value="45.4772154,10.012745">Trenzano</option>
+    <option value="45.7139223,10.4717222">Treviso Bresciano</option>
+    <option value="45.5145042,9.8700367">Urago d'Oglio</option>
+    <option value="45.6124054,10.38033">Vallio Terme</option>
+    <option value="45.7659711,10.5814887">Valvestino</option>
+    <option value="45.3272805,10.0757761">Verolanuova</option>
+    <option value="45.3238968,10.0445638">Verolavecchia</option>
+    <option value="45.7082866,10.4032727">Vestone</option>
+    <option value="46.240099,10.3987474">Vezza d'Oglio</option>
+    <option value="45.6343555,10.1909863">Villa Carcina</option>
+    <option value="45.3553139,9.9320538">Villachiara</option>
+    <option value="45.6182597,10.4724003">Villanuova sul Clisi</option>
+    <option value="46.2649989,10.4448872">Vione</option>
+    <option value="45.3176687,10.369462">Visano</option>
+    <option value="45.6424642,10.5005307">Vobarno</option>
+    <option value="45.7641159,10.1299149">Zone</option>
+  </select>
+
+  <div class="divisore">oppure</div>
+
+  <button class="pin-btn" id="pin-btn" onclick="usaGPS()" aria-label="Sono qui">
+    <div class="pin"><div class="pin-hole"></div></div>
+  </button>
+  <div class="pin-label">Sono qui</div>
+
+  <div id="stato"></div>
+
+  <div class="toggle-riga">
+    <span>Abilita geolocalizzazione</span>
+    <label class="switch">
+      <input type="checkbox" id="toggle-geo" onchange="toggleGeo()">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
+<script>
+const FIREBASE_URL = "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app/posizione.json";
+
+function salva(lat, lon, nomeVisualizzato) {
+  document.getElementById("stato").innerText = "Salvataggio in corso...";
+  const dati = { lat: lat, lon: lon, aggiornato: new Date().toISOString() };
+  fetch(FIREBASE_URL, {
+    method: "PUT",
+    body: JSON.stringify(dati)
+  }).then(function () {
+    document.getElementById("stato").innerText =
+      "Zona impostata: " + nomeVisualizzato + " (" + lat.toFixed(4) + ", " + lon.toFixed(4) + ")";
+  }).catch(function () {
+    document.getElementById("stato").innerText = "Errore nel salvataggio, riprova";
+  });
+}
+
+function onZonaChange() {
+  const select = document.getElementById("zona-select");
+  const valore = select.value;
+  if (!valore) return;
+  const nome = select.options[select.selectedIndex].text;
+  const parti = valore.split(",");
+  salva(parseFloat(parti[0]), parseFloat(parti[1]), nome);
+}
+
+function usaGPS() {
+  const abilitata = localStorage.getItem("geoAbilitata") === "true";
+  if (!abilitata) {
+    document.getElementById("stato").innerText = "Geolocalizzazione disattivata: attivala qui sotto per usarla";
+    return;
+  }
+  document.getElementById("stato").innerText = "Rilevamento posizione in corso...";
+  if (!navigator.geolocation) {
+    document.getElementById("stato").innerText = "Il browser non supporta la geolocalizzazione";
+    return;
+  }
+  navigator.geolocation.getCurrentPosition(function (pos) {
+    salva(pos.coords.latitude, pos.coords.longitude, "posizione attuale");
+  }, function (err) {
+    var msg = "Errore sconosciuto (codice " + err.code + ")";
+    if (err.code === err.PERMISSION_DENIED) msg = "Permesso negato (codice 1)";
+    else if (err.code === err.POSITION_UNAVAILABLE) msg = "Posizione non disponibile (codice 2)";
+    else if (err.code === err.TIMEOUT) msg = "Richiesta scaduta (codice 3)";
+    document.getElementById("stato").innerText = msg;
+  }, { timeout: 15000, enableHighAccuracy: true });
+}
+
+function toggleGeo() {
+  const checkbox = document.getElementById("toggle-geo");
+  const pinBtn = document.getElementById("pin-btn");
+  localStorage.setItem("geoAbilitata", checkbox.checked ? "true" : "false");
+  pinBtn.classList.toggle("disabilitato", !checkbox.checked);
+}
+
+(function () {
+  const salvato = localStorage.getItem("geoAbilitata");
+  const abilitata = salvato === null ? true : salvato === "true";
+  document.getElementById("toggle-geo").checked = abilitata;
+  document.getElementById("pin-btn").classList.toggle("disabilitato", !abilitata);
+  if (salvato === null) localStorage.setItem("geoAbilitata", "true");
+})();
+
+(function () {
+  const strPioggia = document.getElementById("strato-pioggia");
+  const nGocce = 60;
+  for (let i = 0; i < nGocce; i++) {
+    const goccia = document.createElement("div");
+    goccia.className = "goccia";
+    goccia.style.left = Math.random() * 100 + "vw";
+    const durata = 0.5 + Math.random() * 0.5;
+    goccia.style.animationDuration = durata + "s";
+    goccia.style.animationDelay = (Math.random() * durata) + "s";
+    goccia.style.height = (14 + Math.random() * 10) + "px";
+    strPioggia.appendChild(goccia);
+  }
+
+  const strGrandine = document.getElementById("strato-grandine");
+  const nChicchi = 35;
+  for (let i = 0; i < nChicchi; i++) {
+    const chicco = document.createElement("div");
+    chicco.className = "grandine";
+    chicco.style.left = Math.random() * 100 + "vw";
+    const durata = 1.2 + Math.random() * 1.8;
+    chicco.style.animationDuration = durata + "s";
+    chicco.style.animationDelay = (Math.random() * durata) + "s";
+    const dimensione = 4 + Math.random() * 5;
+    chicco.style.width = dimensione + "px";
+    chicco.style.height = dimensione + "px";
+    strGrandine.appendChild(chicco);
+  }
+
+  const DURATA_FASE_MS = 9000;
+  setInterval(function () {
+    document.body.classList.toggle("fase-grandine");
+  }, DURATA_FASE_MS);
+})();
+</script>
+</body>
+</html>
 
 
+    
 
-
-
-
-
-
-
-
-
-
-
-
-
-BRESCIA
-45.5240, 10.2176
-
-
-🌩️ iGrandine
-Scegli la zona da monitorare
-    Scegli un comune...
-    Acquafredda
-    Adro
-    Agnosine
-    Alfianello
-    Anfo
-    Angolo Terme
-    Artogne
-    Azzano Mella
-    Bagnolo Mella
-    Bagolino
-    Barbariga
-    Barghe
-    Bassano Bresciano
-    Bedizzole
-    Berlingo
-    Berzo Demo
-    Berzo Inferiore
-    Bienno
-    Bione
-    Borgo San Giacomo
-    Borgosatollo
-    Borno
-    Botticino
-    Bovegno
-    Bovezzo
-    Brandico
-    Braone
-    Breno
-    Brescia (centro)
-    Brescia - Via Aldo Moro
-    Brione
-    Caino
-    Calcinato
-    Calvagese della Riviera
-    Calvisano
-    Capo di Ponte
-    Capovalle
-    Capriano del Colle
-    Capriolo
-    Carpenedolo
-    Castegnato
-    Castel Mella
-    Castelcovati
-    Castenedolo
-    Casto
-    Castrezzato
-    Cazzago San Martino
-    Cedegolo
-    Cellatica
-    Cerveno
-    Ceto
-    Cevo
-    Chiari
-    Cigole
-    Cimbergo
-    Cividate Camuno
-    Coccaglio
-    Collebeato
-    Collio
-    Cologne
-    Comezzano-Cizzago
-    Concesio
-    Corte Franca
-    Corteno Golgi
-    Corzano
-    Darfo Boario Terme
-    Dello
-    Desenzano del Garda
-    Edolo
-    Erbusco
-    Esine
-    Fiesse
-    Flero
-    Gambara
-    Gardone Riviera
-    Gardone Val Trompia
-    Gargnano
-    Gavardo
-    Ghedi
-    Gianico
-    Gottolengo
-    Gussago
-    Idro
-    Incudine
-    Irma
-    Iseo
-    Isorella
-    Lavenone
-    Leno
-    Limone sul Garda
-    Lodrino
-    Lograto
-    Lonato del Garda
-    Longhena
-    Losine
-    Lozio
-    Lumezzane
-    Maclodio
-    Magasa
-    Mairano
-    Malegno
-    Malonno
-    Manerba del Garda
-    Manerbio
-    Marcheno
-    Marmentino
-    Marone
-    Mazzano
-    Milzano
-    Moniga del Garda
-    Monno
-    Monte Isola
-    Monticelli Brusati
-    Montichiari
-    Montirone
-    Mura
-    Muscoline
-    Nave
-    Niardo
-    Nuvolento
-    Nuvolera
-    Odolo
-    Offlaga
-    Ome
-    Ono San Pietro
-    Orzinuovi
-    Orzivecchi
-    Ospitaletto
-    Ossimo
-    Padenghe sul Garda
-    Paderno Franciacorta
-    Paisco Loveno
-    Paitone
-    Palazzolo sull'Oglio
-    Paratico
-    Paspardo
-    Passirano
-    Pavone del Mella
-    Pertica Alta
-    Pertica Bassa
-    Pezzaze
-    Pian Camuno
-    Piancogno
-    Pisogne
-    Polaveno
-    Polpenazze del Garda
-    Pompiano
-    Poncarale
-    Ponte di Legno
-    Pontevico
-    Pontoglio
-    Pozzolengo
-    Pralboino
-    Preseglie
-    Prevalle
-    Provaglio Val Sabbia
-    Provaglio d'Iseo
-    Puegnago sul Garda
-    Quinzano d'Oglio
-    Remedello
-    Rezzato
-    Roccafranca
-    Rodengo Saiano
-    Roncadelle
-    Rovato
-    Roè Volciano
-    Rudiano
-    Sabbio Chiese
-    Sale Marasino
-    Salò
-    San Felice del Benaco
-    San Gervasio Bresciano
-    San Paolo
-    San Zeno Naviglio
-    Sarezzo
-    Saviore dell'Adamello
-    Sellero
-    Seniga
-    Serle
-    Sirmione
-    Soiano del Lago
-    Sonico
-    Sulzano
-    Tavernole sul Mella
-    Temù
-    Tignale
-    Torbole Casaglia
-    Toscolano-Maderno
-    Travagliato
-    Tremosine sul Garda
-    Trenzano
-    Treviso Bresciano
-    Urago d'Oglio
-    Vallio Terme
-    Valvestino
-    Verolanuova
-    Verolavecchia
-    Vestone
-    Vezza d'Oglio
-    Villa Carcina
-    Villachiara
-    Villanuova sul Clisi
-    Vione
-    Visano
-    Vobarno
-    Zone
-   oppure
-
-Sono qui
-
-Abilita geolocalizzazione
 
