@@ -5,34 +5,103 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>iGrandine</title>
 <style>
-  body {
-    font-family: -apple-system, sans-serif;
-    text-align: center;
-    padding: 60px 20px;
-    background: #0f172a;
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     color: white;
+    overflow: hidden;
   }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #0c4a6e, #1e1b4b);
+    background-size: 400% 400%;
+    animation: gradientMove 18s ease infinite;
+  }
+
+  @keyframes gradientMove {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(70px);
+    opacity: 0.35;
+    z-index: 1;
+  }
+  .blob1 { width: 320px; height: 320px; background: #38bdf8; top: -60px; left: -90px; animation: float1 14s ease-in-out infinite; }
+  .blob2 { width: 260px; height: 260px; background: #818cf8; bottom: -70px; right: -60px; animation: float2 16s ease-in-out infinite; }
+  .blob3 { width: 220px; height: 220px; background: #0ea5e9; top: 45%; left: 65%; animation: float3 20s ease-in-out infinite; }
+
+  @keyframes float1 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(40px, 60px); } }
+  @keyframes float2 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-50px, -30px); } }
+  @keyframes float3 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-30px, 50px); } }
+
+  .contenuto {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 24px;
+  }
+
+  h1 {
+    font-size: 32px;
+    margin: 0 0 6px 0;
+  }
+
+  p {
+    opacity: 0.8;
+    margin: 0 0 34px 0;
+    font-size: 15px;
+  }
+
   button {
-    font-size: 20px;
-    padding: 20px 30px;
-    border-radius: 12px;
+    font-size: 19px;
+    padding: 22px 36px;
+    border-radius: 18px;
     border: none;
     background: #38bdf8;
     color: #0f172a;
     font-weight: bold;
+    box-shadow: 0 0 40px rgba(56, 189, 248, 0.45);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
   }
+  button:active {
+    transform: scale(0.96);
+    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+  }
+
   #stato {
-    margin-top: 24px;
-    font-size: 16px;
-    min-height: 24px;
+    margin-top: 26px;
+    font-size: 15px;
+    min-height: 22px;
+    opacity: 0.9;
   }
 </style>
 </head>
 <body>
-<h1>🌩️ iGrandine</h1>
-<p>Tocca il pulsante ogni volta che cambi città</p>
-<button onclick="aggiorna()">📍 Aggiorna la mia posizione</button>
-<div id="stato"></div>
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<div class="contenuto">
+  <h1>🌩️ iGrandine</h1>
+  <p>Tocca il pulsante ogni volta che cambi città</p>
+  <button onclick="aggiorna()">📍 Aggiorna la mia posizione</button>
+  <div id="stato"></div>
+</div>
 
 <script>
 const FIREBASE_URL = "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app/posizione.json";
