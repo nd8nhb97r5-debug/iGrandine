@@ -17,10 +17,12 @@ FIREBASE_BASE = (
     "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app"
 )
 
+# Tutti gli utenti
 USERS_URL = f"{FIREBASE_BASE}/utenti.json"
-STATE_URL = f"{FIREBASE_BASE}/stato_allerta.json"
 
-NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "")
+# Stato separato per ogni utente
+STATES_URL = f"{FIREBASE_BASE}/stati_allerta.json"
+
 
 # ============================================================
 # SOGLIE METEO
@@ -51,10 +53,11 @@ RADAR_GRANDINE = 55
 
 RADAR_RAGGIO_KM = 120
 
-# Ultimi 8 frame = circa 80 minuti
+# Ultimi frame radar
 RADAR_FRAME_COUNT = 8
 
-# Per considerare una cella realmente in avvicinamento
+# Movimento minimo per considerare
+# una cellula realmente in avvicinamento
 MIN_MOVIMENTO_KM = 2
 
 # Parcheggi/rifugi
@@ -62,45 +65,52 @@ RAGGIO_RICERCA_METRI = 3000
 
 
 # ============================================================
-# POSIZIONE
+# FIREBASE - UTENTI
 # ============================================================
 
-def get_location():
+def get_users():
 
     try:
+
         r = requests.get(
-            POSITION_URL,
-            timeout=10
+            USERS_URL,
+            timeout=15
         )
 
         r.raise_for_status()
 
         data = r.json()
 
-        if data and "lat" in data and "lon" in data:
+        if not isinstance(data, dict):
+            return {}
 
-            return (
-                float(data["lat"]),
-                float(data["lon"])
-            )
+        return data
 
     except Exception as e:
 
-        print("Errore lettura posizione:", e)
+        print(
+            "Errore lettura utenti Firebase:",
+            e
+        )
 
-    return DEFAULT_LAT, DEFAULT_LON
+        return {}
 
 
 # ============================================================
-# STATO PRECEDENTE
+# STATO UTENTE
 # ============================================================
 
-def get_previous_state():
+def get_previous_state(user_id):
+
+    url = (
+        f"{FIREBASE_BASE}"
+        f"/stati_allerta/{user_id}.json"
+    )
 
     try:
 
         r = requests.get(
-            STATE_URL,
+            url,
             timeout=10
         )
 
@@ -109,12 +119,15 @@ def get_previous_state():
         data = r.json()
 
         if isinstance(data, dict):
-
             return data
 
     except Exception as e:
 
-        print("Stato precedente non disponibile:", e)
+        print(
+            f"[{user_id}] Stato precedente "
+            f"non disponibile:",
+            e
+        )
 
     return {
         "level": "VERDE",
@@ -125,12 +138,20 @@ def get_previous_state():
     }
 
 
-def save_state(state):
+def save_state(
+    user_id,
+    state
+):
+
+    url = (
+        f"{FIREBASE_BASE}"
+        f"/stati_allerta/{user_id}.json"
+    )
 
     try:
 
         r = requests.put(
-            STATE_URL,
+            url,
             json=state,
             timeout=10
         )
@@ -141,7 +162,10 @@ def save_state(state):
 
     except Exception as e:
 
-        print("Impossibile salvare stato:", e)
+        print(
+            f"[{user_id}] Impossibile salvare stato:",
+            e
+        )
 
         return False
 
@@ -150,7 +174,10 @@ def save_state(state):
 # OPEN-METEO
 # ============================================================
 
-def get_weather(lat, lon):
+def get_weather(
+    lat,
+    lon
+):
 
     url = (
         "https://api.open-meteo.com/v1/forecast"
@@ -366,7 +393,8 @@ def analyze_forecast(data):
 
         elif (
             max_mm_h >= PIOGGIA_ALLAGAMENTO
-            or accumulo >= ACCUMULO_ALLAGAMENTO_1H
+            or
+            accumulo >= ACCUMULO_ALLAGAMENTO_1H
         ):
 
             result["score"] += 4
@@ -484,7 +512,8 @@ def analyze_forecast(data):
         and
         (
             lpi_value >= LPI_GRANDINE
-            or max_showers >= 2
+            or
+            max_showers >= 2
         )
     ):
 
@@ -502,7 +531,8 @@ def analyze_forecast(data):
         and
         (
             lpi_value >= LPI_TEMPORALE
-            or max_showers >= 2
+            or
+            max_showers >= 2
         )
     ):
 
@@ -602,41 +632,57 @@ def latlon_to_pixel(
 # COLORE UNIVERSAL BLUE -> DBZ
 # ============================================================
 
-# RainViewer Universal Blue:
-# 20 dBZ = azzurro
-# 35 dBZ = giallo
-# 40+ = arancio
-# 45+ = rosso
-# 55+ = magenta
-#
-# Usiamo una classificazione robusta per fasce.
-
-def color_to_dbz(r, g, b, a):
+def color_to_dbz(
+    r,
+    g,
+    b,
+    a
+):
 
     if a < 40:
         return None
 
-    # 65+ dBZ = bianco
-    if r > 240 and g > 240 and b > 240:
+    if (
+        r > 240
+        and
+        g > 240
+        and
+        b > 240
+    ):
+
         return 65
 
-    # 55-64 = magenta
-    if r > 180 and b > 150:
+    if (
+        r > 180
+        and
+        b > 150
+    ):
+
         return 57
 
-    # 45-54 = rosso
-    if r > 120 and g < 100 and b < 100:
+    if (
+        r > 120
+        and
+        g < 100
+        and
+        b < 100
+    ):
+
         return 50
 
-    # 35-44 = arancione/giallo
-    if r > 180 and g > 100 and b < 80:
+    if (
+        r > 180
+        and
+        g > 100
+        and
+        b < 80
+    ):
 
         if g > 180:
             return 36
 
         return 42
 
-    # 20-34 = blu/ciano
     if b > 100:
 
         if g > 120:
@@ -666,7 +712,8 @@ def get_radar_tile(
     except ImportError:
 
         print(
-            "Pillow non installato"
+            "Pillow non installato. "
+            "Installa con: pip install Pillow"
         )
 
         return None
@@ -682,8 +729,6 @@ def get_radar_tile(
     tile_x = int(x_float)
     tile_y = int(y_float)
 
-    # Universal Blue = color 2
-    # 1_0 = smooth + no snow
     url = (
         f"{host}{path}/512/"
         f"{zoom}/{tile_x}/{tile_y}/"
@@ -759,7 +804,6 @@ def analyze_radar_frame(
         * image.height
     )
 
-    # Circa 120 km
     radius_px = 180
 
     pixels = []
@@ -969,10 +1013,7 @@ def analyze_radar(
         )
 
         if obs:
-
-            observations.append(
-                obs
-            )
+            observations.append(obs)
 
         time.sleep(0.1)
 
@@ -1115,6 +1156,7 @@ def interpret_radar(
     if radar["approaching"]:
 
         result["approaching"] = True
+
         result["score"] += 3
 
         eta = radar["eta"]
@@ -1152,7 +1194,8 @@ def interpret_radar(
 
         result["details"].append(
             f"Movimento stimato: "
-            f"{radar['speed']:.0f} km/h verso {direction}"
+            f"{radar['speed']:.0f} km/h "
+            f"verso {direction}"
         )
 
     return result
@@ -1213,8 +1256,7 @@ def should_notify(
     previous,
     level,
     score,
-    eta,
-    alerts
+    eta
 ):
 
     old_level = previous.get(
@@ -1237,10 +1279,13 @@ def should_notify(
     )
 
     # Prima allerta
-    if level != "VERDE" and old_level == "VERDE":
+    if (
+        level != "VERDE"
+        and
+        old_level == "VERDE"
+    ):
         return True
 
-    # Peggioramento del livello
     levels = {
         "VERDE": 0,
         "GIALLO": 1,
@@ -1248,18 +1293,19 @@ def should_notify(
         "ROSSO": 3
     }
 
+    # Peggioramento livello
     if (
-        levels[level]
+        levels.get(level, 0)
         >
         levels.get(old_level, 0)
     ):
         return True
 
-    # Score peggiorato molto
+    # Peggioramento importante dello score
     if score >= old_score + 3:
         return True
 
-    # Passaggio ETA importante
+    # Peggioramento ETA
     eta_priority = {
         "none": 0,
         "later": 1,
@@ -1269,17 +1315,12 @@ def should_notify(
     }
 
     if (
-        eta_priority[new_eta_stage]
+        eta_priority.get(new_eta_stage, 0)
         >
-        eta_priority.get(
-            old_eta_stage,
-            0
-        )
+        eta_priority.get(old_eta_stage, 0)
     ):
-
         return True
 
-    # Non ripetere continuamente
     return False
 
 
@@ -1358,7 +1399,8 @@ def cerca_parcheggi(
 
         if (
             lat_el is None
-            or lon_el is None
+            or
+            lon_el is None
         ):
             continue
 
@@ -1433,34 +1475,44 @@ def format_parcheggi(
 # ============================================================
 
 def send_notification(
+    topic,
     message,
     level,
     hail_risk=False
 ):
 
-    if not NTFY_TOPIC:
-        print("NTFY_TOPIC non impostato.")
+    if not topic:
+
+        print(
+            "Topic ntfy non impostato."
+        )
+
         return False
 
     if hail_risk:
+
         title = "🧊 ALLERTA GRANDINE"
         priority = "max"
 
     elif level == "ROSSO":
+
         title = "🚨 ALLERTA METEO ROSSA"
         priority = "max"
 
     elif level == "ARANCIONE":
+
         title = "🟠 ALLERTA METEO"
         priority = "urgent"
 
     else:
+
         title = "🟡 AVVISO METEO"
         priority = "high"
 
     try:
+
         r = requests.post(
-            f"https://ntfy.sh/{NTFY_TOPIC}",
+            f"https://ntfy.sh/{topic}",
             data=message.encode("utf-8"),
             headers={
                 "Title": title,
@@ -1471,178 +1523,59 @@ def send_notification(
         )
 
         r.raise_for_status()
+
         return True
 
     except Exception as e:
-        print("Errore ntfy:", e)
+
+        print(
+            "Errore ntfy:",
+            e
+        )
+
         return False
 
 
 # ============================================================
-# MAIN
+# CREA MESSAGGIO
 # ============================================================
 
-def main():
+def build_message(
+    comune,
+    lat,
+    lon,
+    level,
+    score,
+    forecast,
+    radar_result,
+    parcheggi
+):
 
-    lat, lon = get_location()
-
-    print(
-        f"Posizione: {lat}, {lon}"
-    )
-
-    previous = get_previous_state()
-
-    # --------------------------------------------------------
-    # METEO
-    # --------------------------------------------------------
-
-    try:
-
-        weather = get_weather(
-            lat,
-            lon
-        )
-
-        forecast = analyze_forecast(
-            weather
-        )
-
-    except Exception as e:
-
-        print(
-            "Errore Open-Meteo:",
-            e
-        )
-
-        return
-
-    # --------------------------------------------------------
-    # RADAR
-    # --------------------------------------------------------
-
-    radar = analyze_radar(
-        lat,
-        lon
-    )
-
-    radar_result = interpret_radar(
-        radar
-    )
-
-    # --------------------------------------------------------
-    # LIVELLO
-    # --------------------------------------------------------
-
-    level, score = get_level(
-        forecast["score"],
-        radar_result["score"]
-    )
-
-    eta = radar_result[
-        "eta"
-    ]
-
-    # --------------------------------------------------------
-    # DECIDI NOTIFICA
-    # --------------------------------------------------------
-
-    notify = True
-
-    # --------------------------------------------------------
-    # AGGIORNA STATO ANCHE SENZA NOTIFICA
-    # --------------------------------------------------------
-
-    state = {
-        "level": level,
-        "score": score,
-        "eta_stage": eta_stage(eta),
-        "last_alert_type": (
-            "|".join(
-                forecast["alerts"]
-                +
-                radar_result["alerts"]
-            )
-        )[:500],
-        "timestamp": int(
-            datetime.now(
-                timezone.utc
-            ).timestamp()
-        )
-    }
-
-    # Verde: se prima c'era allerta,
-    # resettiamo lo stato ma non mandiamo
-    # una notifica ogni volta.
-    if level == "VERDE":
-
-        if previous.get(
-            "level"
-        ) != "VERDE":
-
-            state["last_alert_type"] = ""
-
-        save_state(state)
-
-        print(
-            "🟢 Nessun rischio significativo."
-        )
-
-        return
-
-    # --------------------------------------------------------
-    # SE NON SERVE NOTIFICA
-    # --------------------------------------------------------
-
-    if not notify:
-
-        save_state(state)
-
-        print(
-            "Nessuna nuova notifica. "
-            f"Livello attuale: {level}, "
-            f"score: {score}"
-        )
-
-        return
-
-    # --------------------------------------------------------
-    # PARCHEGGI
-    # --------------------------------------------------------
+    eta = radar_result["eta"]
 
     auto_risk = (
         forecast["hail_risk"]
         or
-        radar_result["dbz"]
-        >= RADAR_GRANDINE
+        radar_result["dbz"] >= RADAR_GRANDINE
         or
-        forecast["max_gust"]
-        >= VENTO_FORTE
+        forecast["max_gust"] >= VENTO_FORTE
         or
         level == "ROSSO"
     )
-
-    parcheggi = []
-
-    if auto_risk:
-
-        parcheggi = cerca_parcheggi(
-            lat,
-            lon
-        )
-
-    # --------------------------------------------------------
-    # MESSAGGIO
-    # --------------------------------------------------------
 
     message = (
         f"{'🚨' if level == 'ROSSO' else '⚠️'} "
         f"ALLERTA METEO {level}\n\n"
     )
 
+    message += (
+        f"📍 ZONA: {comune}\n"
+    )
+
     if forecast["alerts"]:
 
         message += (
-            "🌦️ PREVISIONE:\n"
+            "\n🌦️ PREVISIONE:\n"
         )
 
         message += "\n".join(
@@ -1701,7 +1634,8 @@ def main():
 
         if (
             radar_result["approaching"]
-            and eta is not None
+            and
+            eta is not None
         ):
 
             if eta <= 15:
@@ -1745,8 +1679,8 @@ def main():
     )
 
     message += (
-        "\n📍 Posizione: "
-        f"{lat}, {lon}"
+        "\n📍 Coordinate: "
+        f"{lat:.5f}, {lon:.5f}"
     )
 
     message += (
@@ -1757,26 +1691,360 @@ def main():
         "\n🌦️ Previsioni: Open-Meteo"
     )
 
-    # ------------------------------------------------------------
-    # INVIA
-    # ------------------------------------------------------------
+    return message
+
+
+# ============================================================
+# ANALIZZA SINGOLO UTENTE
+# ============================================================
+
+def process_user(
+    user_id,
+    user_data
+):
+
+    print(
+        "\n"
+        + "=" * 60
+    )
+
+    print(
+        f"UTENTE: {user_id}"
+    )
+
+    if not isinstance(
+        user_data,
+        dict
+    ):
+
+        print(
+            "Dati utente non validi."
+        )
+
+        return
+
+    # --------------------------------------------------------
+    # POSIZIONE
+    # --------------------------------------------------------
+
+    try:
+
+        lat = float(
+            user_data.get(
+                "lat",
+                DEFAULT_LAT
+            )
+        )
+
+        lon = float(
+            user_data.get(
+                "lon",
+                DEFAULT_LON
+            )
+        )
+
+    except Exception:
+
+        lat = DEFAULT_LAT
+        lon = DEFAULT_LON
+
+    comune = user_data.get(
+        "comune",
+        "Zona selezionata"
+    )
+
+    topic = user_data.get(
+        "ntfy_topic",
+        ""
+    )
+
+    print(
+        f"Comune: {comune}"
+    )
+
+    print(
+        f"Posizione: {lat}, {lon}"
+    )
+
+    if not topic:
+
+        print(
+            "⚠️ Utente senza topic ntfy."
+        )
+
+        print(
+            "Salto questo utente."
+        )
+
+        return
+
+    # --------------------------------------------------------
+    # STATO PRECEDENTE
+    # --------------------------------------------------------
+
+    previous = get_previous_state(
+        user_id
+    )
+
+    # --------------------------------------------------------
+    # METEO
+    # --------------------------------------------------------
+
+    try:
+
+        weather = get_weather(
+            lat,
+            lon
+        )
+
+        forecast = analyze_forecast(
+            weather
+        )
+
+    except Exception as e:
+
+        print(
+            f"[{user_id}] "
+            f"Errore Open-Meteo:",
+            e
+        )
+
+        return
+
+    # --------------------------------------------------------
+    # RADAR
+    # --------------------------------------------------------
+
+    radar = analyze_radar(
+        lat,
+        lon
+    )
+
+    radar_result = interpret_radar(
+        radar
+    )
+
+    # --------------------------------------------------------
+    # LIVELLO
+    # --------------------------------------------------------
+
+    level, score = get_level(
+        forecast["score"],
+        radar_result["score"]
+    )
+
+    eta = radar_result["eta"]
+
+    print(
+        f"Livello: {level}"
+    )
+
+    print(
+        f"Score: {score}"
+    )
+
+    # --------------------------------------------------------
+    # STATO NUOVO
+    # --------------------------------------------------------
+
+    state = {
+        "level": level,
+        "score": score,
+        "eta_stage": eta_stage(eta),
+        "last_alert_type": (
+            "|".join(
+                forecast["alerts"]
+                +
+                radar_result["alerts"]
+            )
+        )[:500],
+        "timestamp": int(
+            datetime.now(
+                timezone.utc
+            ).timestamp()
+        )
+    }
+
+    # --------------------------------------------------------
+    # VERDE
+    # --------------------------------------------------------
+
+    if level == "VERDE":
+
+        if previous.get(
+            "level"
+        ) != "VERDE":
+
+            state["last_alert_type"] = ""
+
+        save_state(
+            user_id,
+            state
+        )
+
+        print(
+            f"[{user_id}] "
+            "🟢 Nessun rischio significativo."
+        )
+
+        return
+
+    # --------------------------------------------------------
+    # DECIDI SE NOTIFICARE
+    # --------------------------------------------------------
+
+    notify = should_notify(
+        previous,
+        level,
+        score,
+        eta
+    )
+
+    if not notify:
+
+        save_state(
+            user_id,
+            state
+        )
+
+        print(
+            f"[{user_id}] "
+            "Nessuna nuova notifica."
+        )
+
+        return
+
+    # --------------------------------------------------------
+    # PARCHEGGI
+    # --------------------------------------------------------
+
+    auto_risk = (
+        forecast["hail_risk"]
+        or
+        radar_result["dbz"] >= RADAR_GRANDINE
+        or
+        forecast["max_gust"] >= VENTO_FORTE
+        or
+        level == "ROSSO"
+    )
+
+    parcheggi = []
+
+    if auto_risk:
+
+        print(
+            f"[{user_id}] "
+            "Ricerca parcheggi coperti..."
+        )
+
+        parcheggi = cerca_parcheggi(
+            lat,
+            lon
+        )
+
+    # --------------------------------------------------------
+    # CREA MESSAGGIO
+    # --------------------------------------------------------
+
+    message = build_message(
+        comune,
+        lat,
+        lon,
+        level,
+        score,
+        forecast,
+        radar_result,
+        parcheggi
+    )
+
+    # --------------------------------------------------------
+    # INVIA NOTIFICA
+    # --------------------------------------------------------
 
     if send_notification(
+        topic,
         message,
         level,
         forecast["hail_risk"]
     ):
-        save_state(state)
+
+        save_state(
+            user_id,
+            state
+        )
 
         print(
-            "Notifica inviata."
+            f"[{user_id}] "
+            "✅ Notifica inviata."
         )
 
     else:
+
         print(
-            "Notifica non inviata."
+            f"[{user_id}] "
+            "❌ Notifica non inviata."
         )
 
+
+# ============================================================
+# MAIN
+# ============================================================
+
+def main():
+
+    print()
+    print("=" * 60)
+    print("🌩️ iGRANDINE - CONTROLLO MULTIUTENTE")
+    print("=" * 60)
+
+    # --------------------------------------------------------
+    # LEGGI TUTTI GLI UTENTI
+    # --------------------------------------------------------
+
+    users = get_users()
+
+    if not users:
+
+        print(
+            "Nessun utente trovato in Firebase."
+        )
+
+        return
+
+    print(
+        f"Utenti trovati: {len(users)}"
+    )
+
+    # --------------------------------------------------------
+    # ANALIZZA OGNI UTENTE SEPARATAMENTE
+    # --------------------------------------------------------
+
+    for user_id, user_data in users.items():
+
+        try:
+
+            process_user(
+                user_id,
+                user_data
+            )
+
+        except Exception as e:
+
+            print(
+                f"[{user_id}] "
+                f"Errore generale:",
+                e
+            )
+
+    print()
+    print("=" * 60)
+    print("Controllo completato.")
+    print("=" * 60)
+
+
+# ============================================================
+# AVVIO
+# ============================================================
 
 if __name__ == "__main__":
     main()
