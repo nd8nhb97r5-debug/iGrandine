@@ -1768,9 +1768,10 @@ def main():
     # --------------------------------------------------------
 
     if send_notification(
-        message,
-        level
-    ):
+    message,
+    level,
+    forecast["hail_risk"]
+):
 
         save_state(state)
 
