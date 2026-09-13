@@ -1434,48 +1434,34 @@ def format_parcheggi(
 
 def send_notification(
     message,
-    level
+    level,
+    hail_risk=False
 ):
 
     if not NTFY_TOPIC:
-
-        print(
-            "NTFY_TOPIC non impostato."
-        )
-
+        print("NTFY_TOPIC non impostato.")
         return False
 
-    if level == "ROSSO":
+    if hail_risk:
+        title = "🧊 ALLERTA GRANDINE"
+        priority = "max"
 
-        title = (
-            "🚨 ALLERTA METEO ROSSA"
-        )
-
+    elif level == "ROSSO":
+        title = "🚨 ALLERTA METEO ROSSA"
         priority = "max"
 
     elif level == "ARANCIONE":
-
-        title = (
-            "🟠 ALLERTA METEO"
-        )
-
+        title = "🟠 ALLERTA METEO"
         priority = "urgent"
 
     else:
-
-        title = (
-            "🟡 AVVISO METEO"
-        )
-
+        title = "🟡 AVVISO METEO"
         priority = "high"
 
     try:
-
         r = requests.post(
             f"https://ntfy.sh/{NTFY_TOPIC}",
-            data=message.encode(
-                "utf-8"
-            ),
+            data=message.encode("utf-8"),
             headers={
                 "Title": title,
                 "Priority": priority,
@@ -1485,16 +1471,10 @@ def send_notification(
         )
 
         r.raise_for_status()
-
         return True
 
     except Exception as e:
-
-        print(
-            "Errore ntfy:",
-            e
-        )
-
+        print("Errore ntfy:", e)
         return False
 
 
