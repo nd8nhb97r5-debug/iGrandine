@@ -1757,23 +1757,26 @@ def main():
         "\n🌦️ Previsioni: Open-Meteo"
     )
 
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
     # INVIA
-    # --------------------------------------------------------
+    # ------------------------------------------------------------
 
-if send_notification( 
-   message, 
-   level, 
-   forecast["hail_risk"]
+    if send_notification(
+        message,
+        level,
+        forecast["hail_risk"]
+    ):
+        save_state(state)
 
-   save_state(state)
-print(
-"Notifica inviata."
-)
+        print(
+            "Notifica inviata."
+        )
 
-else:
-print(
-"Notifica non inviata."
-if
-__name__ == "__main__":
-main ()
+    else:
+        print(
+            "Notifica non inviata."
+        )
+
+
+if __name__ == "__main__":
+    main()
