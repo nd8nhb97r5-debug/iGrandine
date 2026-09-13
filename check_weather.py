@@ -1764,7 +1764,8 @@ def main():
 if send_notification(
     message,
     level,
-    forecast["True"]
+    True
+):
 ):
     save_state(state)
 
