@@ -1761,12 +1761,16 @@ def main():
     # INVIA
     # --------------------------------------------------------
 
-if send _notification( message, level, forecast["hail_risk"]
-) :
-save_state(state)
+if send_notification( 
+   message, 
+   level, 
+   forecast["hail_risk"]
+
+   save_state(state)
 print(
 "Notifica inviata."
 )
+
 else:
 print(
 "Notifica non inviata."
