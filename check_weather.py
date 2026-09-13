@@ -10,8 +10,8 @@ from datetime import datetime, timezone
 # CONFIGURAZIONE
 # ============================================================
 
-DEFAULT_LAT = 45.4642
-DEFAULT_LON = 9.1900
+DEFAULT_LAT = 45.5009
+DEFAULT_LON = 10.3554
 
 FIREBASE_BASE = (
     "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app"
