@@ -1767,17 +1767,16 @@ def main():
     # INVIA
     # --------------------------------------------------------
 
-    if send_notification(
+if send_notification(
     message,
     level,
     forecast["hail_risk"]
 ):
+    save_state(state)
 
-        save_state(state)
-
-        print(
-            "Notifica inviata."
-        )
+    print(
+        "Notifica inviata."
+    )
 
     else:
 
