@@ -17,7 +17,7 @@ FIREBASE_BASE = (
     "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app"
 )
 
-POSITION_URL = f"{FIREBASE_BASE}/utenti.json"
+USERS_URL = f"{FIREBASE_BASE}/utenti.json"
 STATE_URL = f"{FIREBASE_BASE}/stato_allerta.json"
 
 NTFY_TOPIC = os.environ.get("NTFY_TOPIC", "")
