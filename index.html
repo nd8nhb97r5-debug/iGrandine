@@ -6,134 +6,363 @@
 <title>iGrandine</title>
 <style>
   * { box-sizing: border-box; }
-
   html, body {
     margin: 0;
-    height: 100%;
+    min-height: 100%;
     font-family: -apple-system, BlinkMacSystemFont, sans-serif;
     color: white;
-    overflow: hidden;
+    overflow-x: hidden;
   }
-
   body {
     min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
-    background: linear-gradient(-45deg, #0f172a, #1e293b, #0c4a6e, #1e1b4b);
-    background-size: 400% 400%;
-    animation: gradientMove 18s ease infinite;
+    background: linear-gradient(180deg, #1e1b4b 0%, #7c2d92 30%, #ea580c 65%, #fb923c 100%);
+    background-size: 200% 200%;
+    animation: cieloMuove 25s ease infinite;
+    padding-bottom: 190px;
+  }
+  @keyframes cieloMuove {
+    0%   { background-position: 50% 0%; }
+    50%  { background-position: 50% 100%; }
+    100% { background-position: 50% 0%; }
   }
 
-  @keyframes gradientMove {
-    0%   { background-position: 0% 50%; }
-    50%  { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-
-  .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(70px);
-    opacity: 0.35;
+  .skyline {
+    position: fixed;
+    bottom: 46px; left: 0; right: 0;
+    height: 160px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
     z-index: 1;
+    pointer-events: none;
   }
-  .blob1 { width: 320px; height: 320px; background: #38bdf8; top: -60px; left: -90px; animation: float1 14s ease-in-out infinite; }
-  .blob2 { width: 260px; height: 260px; background: #818cf8; bottom: -70px; right: -60px; animation: float2 16s ease-in-out infinite; }
-  .blob3 { width: 220px; height: 220px; background: #0ea5e9; top: 45%; left: 65%; animation: float3 20s ease-in-out infinite; }
+  .edificio { background: #1c1024; margin-right: 4px; position: relative; }
+  .finestra { position: absolute; width: 4px; height: 4px; background: #fde68a; opacity: 0.6; }
 
-  @keyframes float1 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(40px, 60px); } }
-  @keyframes float2 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-50px, -30px); } }
-  @keyframes float3 { 0%, 100% { transform: translate(0,0); } 50% { transform: translate(-30px, 50px); } }
+  .corpo-cupola { width: 54px; height: 55px; background: #1c1024; }
+  .cupola { width: 66px; height: 34px; background: #1c1024; border-radius: 50% 50% 0 0; margin: 0 auto; }
+  .lanterna { width: 10px; height: 16px; background: #1c1024; margin: 0 auto; }
+  .pallina-cupola { width: 12px; height: 12px; border-radius: 50%; background: #1c1024; margin: 0 auto; }
+
+  .torre { width: 16px; height: 95px; background: #1c1024; margin-right: 4px; }
+  .tetto-torre {
+    width: 0; height: 0;
+    border-left: 11px solid transparent;
+    border-right: 11px solid transparent;
+    border-bottom: 16px solid #1c1024;
+    margin: 0 auto;
+  }
+
+  .scritta-brescia {
+    position: fixed;
+    bottom: 12px; left: 0; right: 0;
+    text-align: center;
+    z-index: 1;
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #1c1024;
+    text-shadow: 0 1px 6px rgba(255,255,255,0.25);
+    pointer-events: none;
+  }
+
+  #strato-pioggia, #strato-grandine {
+    position: fixed; inset: 0; z-index: 2; pointer-events: none; overflow: hidden;
+    transition: opacity 1.8s ease;
+  }
+  #strato-grandine { opacity: 0; }
+  body.fase-grandine #strato-pioggia { opacity: 0; }
+  body.fase-grandine #strato-grandine { opacity: 1; }
+
+  .goccia {
+    position: absolute;
+    top: -30px;
+    width: 2px;
+    background: linear-gradient(to bottom, rgba(224,242,254,0), rgba(224,242,254,0.85));
+    animation-name: cadeGiuVeloce;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes cadeGiuVeloce {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(105vh); }
+  }
+
+  .grandine {
+    position: absolute;
+    top: -20px;
+    background: #e0f2fe;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(255,255,255,0.6);
+    animation-name: cadeGiu;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+  }
+  @keyframes cadeGiu {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 0.9; }
+    100% { transform: translateY(105vh) rotate(200deg); opacity: 0.9; }
+  }
 
   .contenuto {
     position: relative;
-    z-index: 2;
+    z-index: 3;
     text-align: center;
-    padding: 24px;
+    padding: 40px 20px 10px 20px;
   }
+  h1 { font-size: 26px; margin: 0 0 4px 0; }
+  p.sub { opacity: 0.85; margin: 0 0 22px 0; font-size: 14px; }
 
-  h1 {
-    font-size: 32px;
-    margin: 0 0 6px 0;
-  }
-
-  p {
-    opacity: 0.8;
-    margin: 0 0 34px 0;
-    font-size: 15px;
-  }
-
-  button {
-    font-size: 19px;
-    padding: 22px 36px;
-    border-radius: 18px;
+  select {
+    width: 100%;
+    max-width: 320px;
+    font-size: 16px;
+    padding: 16px 18px;
+    border-radius: 14px;
     border: none;
-    background: #38bdf8;
-    color: #0f172a;
+    background: #1e293b;
+    color: white;
     font-weight: bold;
-    box-shadow: 0 0 40px rgba(56, 189, 248, 0.45);
-    cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  button:active {
-    transform: scale(0.96);
-    box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+    box-shadow: 0 0 18px rgba(56,189,248,0.25);
+    -webkit-appearance: none;
+    appearance: none;
   }
 
-  #stato {
-    margin-top: 26px;
-    font-size: 15px;
-    min-height: 22px;
-    opacity: 0.9;
+  .divisore {
+    margin: 30px auto;
+    max-width: 320px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0.6;
+    font-size: 13px;
   }
+  .divisore::before, .divisore::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .pin-btn { background: none; border: none; padding: 0; cursor: pointer; }
+  .pin-btn.disabilitato { opacity: 0.35; pointer-events: none; }
+  .pin {
+    width: 68px;
+    height: 68px;
+    background: #ef4444;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    box-shadow: 0 0 24px rgba(239,68,68,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+  }
+  .pin-btn:active .pin { transform: rotate(-45deg) scale(0.94); }
+  .pin-hole {
+    width: 26px;
+    height: 26px;
+    background: white;
+    border-radius: 50%;
+    transform: rotate(45deg);
+  }
+  .pin-label {
+    margin-top: 12px;
+    font-weight: bold;
+    font-size: 15px;
+  }
+
+  #stato { margin-top: 26px; font-size: 14px; min-height: 22px; opacity: 0.95; }
+
+  .toggle-riga {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 12px;
+    opacity: 0.8;
+  }
+  .switch { position: relative; display: inline-block; width: 38px; height: 22px; }
+  .switch input { opacity: 0; width: 0; height: 0; }
+  .slider {
+    position: absolute; cursor: pointer; inset: 0;
+    background-color: #4b5563;
+    border-radius: 22px;
+    transition: 0.2s;
+  }
+  .slider::before {
+    content: "";
+    position: absolute;
+    height: 16px; width: 16px;
+    left: 3px; bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+  .switch input:checked + .slider { background-color: #38bdf8; }
+  .switch input:checked + .slider::before { transform: translateX(16px); }
 </style>
 </head>
 <body>
 
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
-<div class="blob blob3"></div>
+<div class="skyline" id="skyline">
+  <div class="edificio" style="width:26px;height:55px;"></div>
+  <div class="edificio" style="width:22px;height:75px;"></div>
+  <div class="edificio" style="width:30px;height:60px;"></div>
+  <div style="display:flex;flex-direction:column;align-items:center;">
+    <div class="tetto-torre"></div>
+    <div class="torre"></div>
+  </div>
+  <div class="edificio" style="width:28px;height:70px;"></div>
+  <div style="text-align:center;">
+    <div class="pallina-cupola"></div>
+    <div class="lanterna"></div>
+    <div class="cupola"></div>
+    <div class="corpo-cupola"></div>
+  </div>
+  <div class="edificio" style="width:30px;height:65px;"></div>
+  <div class="edificio" style="width:24px;height:50px;"></div>
+  <div class="edificio" style="width:34px;height:80px;"></div>
+  <div class="edificio" style="width:26px;height:60px;"></div>
+  <div class="edificio" style="width:22px;height:45px;"></div>
+</div>
+<div class="scritta-brescia">BRESCIA</div>
+<div id="strato-pioggia"></div>
+<div id="strato-grandine"></div>
 
 <div class="contenuto">
   <h1>🌩️ iGrandine</h1>
-  <p>Tocca il pulsante ogni volta che cambi città</p>
-  <button onclick="aggiorna()">📍 Aggiorna la mia posizione</button>
+  <p class="sub">Scegli la zona da monitorare</p>
+
+  <select id="zona-select" onchange="onZonaChange()">
+    <option value="">Scegli una zona...</option>
+    <option value="45.6867,10.0508">Iseo</option>
+    <option value="45.5729,10.0269">Cazzago S. Martino</option>
+    <option value="45.5240,10.2176">Brescia - V. Aldo Moro</option>
+    <option value="45.4728,10.0264">Maclodio</option>
+    <option value="45.5486,10.1128">Ospitaletto</option>
+    <option value="45.5563,9.9679">Coccaglio</option>
+    <option value="45.4844,10.2467">Borgosatollo</option>
+    <option value="45.4142,10.2481">Bagnolo Mella</option>
+    <option value="45.4642,10.5308">Desenzano del Garda</option>
+  </select>
+
+  <div class="divisore">oppure</div>
+
+  <button class="pin-btn" id="pin-btn" onclick="usaGPS()" aria-label="Sono qui">
+    <div class="pin"><div class="pin-hole"></div></div>
+  </button>
+  <div class="pin-label">Sono qui</div>
+
   <div id="stato"></div>
+
+  <div class="toggle-riga">
+    <span>Abilita geolocalizzazione</span>
+    <label class="switch">
+      <input type="checkbox" id="toggle-geo" onchange="toggleGeo()">
+      <span class="slider"></span>
+    </label>
+  </div>
 </div>
 
 <script>
 const FIREBASE_URL = "https://igrandine-default-rtdb.europe-west1.firebasedatabase.app/posizione.json";
 
-function aggiorna() {
-  document.getElementById("stato").innerText = "Rilevamento posizione in corso...";
+function salva(lat, lon, nomeVisualizzato) {
+  document.getElementById("stato").innerText = "Salvataggio in corso...";
+  const dati = { lat: lat, lon: lon, aggiornato: new Date().toISOString() };
+  fetch(FIREBASE_URL, {
+    method: "PUT",
+    body: JSON.stringify(dati)
+  }).then(function () {
+    document.getElementById("stato").innerText =
+      "Zona impostata: " + nomeVisualizzato + " (" + lat.toFixed(4) + ", " + lon.toFixed(4) + ")";
+  }).catch(function () {
+    document.getElementById("stato").innerText = "Errore nel salvataggio, riprova";
+  });
+}
 
+function onZonaChange() {
+  const select = document.getElementById("zona-select");
+  const valore = select.value;
+  if (!valore) return;
+  const nome = select.options[select.selectedIndex].text;
+  const parti = valore.split(",");
+  salva(parseFloat(parti[0]), parseFloat(parti[1]), nome);
+}
+
+function usaGPS() {
+  const abilitata = localStorage.getItem("geoAbilitata") === "true";
+  if (!abilitata) {
+    document.getElementById("stato").innerText = "Geolocalizzazione disattivata: attivala qui sotto per usarla";
+    return;
+  }
+  document.getElementById("stato").innerText = "Rilevamento posizione in corso...";
   if (!navigator.geolocation) {
     document.getElementById("stato").innerText = "Il browser non supporta la geolocalizzazione";
     return;
   }
-
   navigator.geolocation.getCurrentPosition(function (pos) {
-    const dati = {
-      lat: pos.coords.latitude,
-      lon: pos.coords.longitude,
-      aggiornato: new Date().toISOString()
-    };
-
-    fetch(FIREBASE_URL, {
-      method: "PUT",
-      body: JSON.stringify(dati)
-    }).then(function () {
-      document.getElementById("stato").innerText =
-        "Posizione aggiornata: " + dati.lat.toFixed(4) + ", " + dati.lon.toFixed(4);
-    }).catch(function () {
-      document.getElementById("stato").innerText = "Errore nel salvataggio, riprova";
-    });
-  }, function () {
-    document.getElementById("stato").innerText = "Permesso di localizzazione negato";
-  });
+    salva(pos.coords.latitude, pos.coords.longitude, "posizione attuale");
+  }, function (err) {
+    var msg = "Errore sconosciuto (codice " + err.code + ")";
+    if (err.code === err.PERMISSION_DENIED) msg = "Permesso negato (codice 1)";
+    else if (err.code === err.POSITION_UNAVAILABLE) msg = "Posizione non disponibile (codice 2)";
+    else if (err.code === err.TIMEOUT) msg = "Richiesta scaduta (codice 3)";
+    document.getElementById("stato").innerText = msg;
+  }, { timeout: 15000, enableHighAccuracy: true });
 }
+
+function toggleGeo() {
+  const checkbox = document.getElementById("toggle-geo");
+  const pinBtn = document.getElementById("pin-btn");
+  localStorage.setItem("geoAbilitata", checkbox.checked ? "true" : "false");
+  pinBtn.classList.toggle("disabilitato", !checkbox.checked);
+}
+
+(function () {
+  const salvato = localStorage.getItem("geoAbilitata");
+  const abilitata = salvato === null ? true : salvato === "true";
+  document.getElementById("toggle-geo").checked = abilitata;
+  document.getElementById("pin-btn").classList.toggle("disabilitato", !abilitata);
+  if (salvato === null) localStorage.setItem("geoAbilitata", "true");
+})();
+
+(function () {
+  const strPioggia = document.getElementById("strato-pioggia");
+  const nGocce = 60;
+  for (let i = 0; i < nGocce; i++) {
+    const goccia = document.createElement("div");
+    goccia.className = "goccia";
+    goccia.style.left = Math.random() * 100 + "vw";
+    const durata = 0.5 + Math.random() * 0.5;
+    goccia.style.animationDuration = durata + "s";
+    goccia.style.animationDelay = (Math.random() * durata) + "s";
+    goccia.style.height = (14 + Math.random() * 10) + "px";
+    strPioggia.appendChild(goccia);
+  }
+
+  const strGrandine = document.getElementById("strato-grandine");
+  const nChicchi = 35;
+  for (let i = 0; i < nChicchi; i++) {
+    const chicco = document.createElement("div");
+    chicco.className = "grandine";
+    chicco.style.left = Math.random() * 100 + "vw";
+    const durata = 1.2 + Math.random() * 1.8;
+    chicco.style.animationDuration = durata + "s";
+    chicco.style.animationDelay = (Math.random() * durata) + "s";
+    const dimensione = 4 + Math.random() * 5;
+    chicco.style.width = dimensione + "px";
+    chicco.style.height = dimensione + "px";
+    strGrandine.appendChild(chicco);
+  }
+
+  const DURATA_FASE_MS = 9000;
+  setInterval(function () {
+    document.body.classList.toggle("fase-grandine");
+  }, DURATA_FASE_MS);
+})();
 </script>
 </body>
 </html>
