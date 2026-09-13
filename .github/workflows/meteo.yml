@@ -37,4 +37,4 @@ jobs:
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
 
         run: |
-          python allerta_meteo.py
+          python check_weather.py
